@@ -58,7 +58,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def init_database():
     """Initialize the database tables"""
-    Base.metadata.create_all(bind=engine)
+    try:
+        Base.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Warning: Could not initialize database: {e}")
+        # Continue anyway - database might not be required for all endpoints
 
 
 def get_db():
