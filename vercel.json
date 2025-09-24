@@ -1,13 +1,34 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
       "destination": "/api"
+    },
+    {
+      "source": "/static/(.*)",
+      "destination": "/app/static/$1"
+    },
+    {
+      "source": "/",
+      "destination": "/app/static/login.html"
+    },
+    {
+      "source": "/app",
+      "destination": "/app/static/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/app/static/login.html"
+    },
+    {
+      "source": "/dashboard",
+      "destination": "/app/static/dashboard.html"
     }
   ],
   "functions": {
     "api/index.py": {
-      "maxDuration": 30
+      "maxDuration": 30,
+      "includeFiles": "app/**"
     }
   }
 }
