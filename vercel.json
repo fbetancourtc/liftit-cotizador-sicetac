@@ -1,14 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/static/(.*)",
-      "destination": "/app/static/$1"
-    },
-    {
-      "source": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))$",
-      "destination": "/app/static/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/api"
     }
