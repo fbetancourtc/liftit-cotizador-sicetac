@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  cotizador:
+    build: .
+    container_name: cotizador-sicetac-api
+    ports:
+      - "5050:5050"
+    env_file:
+      - .env
+    environment:
+      ENVIRONMENT: local
+    restart: unless-stopped

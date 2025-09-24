@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liftit - Cotizador SICETAC</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>🚚 Liftit Cotizador SICETAC</h1>
+                    <p>Sistema de cotización de tarifas de transporte de carga</p>
+                </div>
+                <div id="userInfo" style="text-align: right;">
+                    <span id="userEmail"></span>
+                    <button id="logoutBtn" class="btn btn-secondary" style="margin-left: 1rem;">Cerrar Sesión</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- Quote Form -->
+            <section class="quote-form-section">
+                <h2>Nueva Cotización</h2>
+                <form id="quoteForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="period">Período (AAAAMM)*</label>
+                            <input type="text" id="period" name="period" maxlength="6" pattern="\d{6}" required placeholder="202401">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="configuration">Configuración*</label>
+                            <select id="configuration" name="configuration" required>
+                                <option value="">Seleccione...</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="2S2">2S2</option>
+                                <option value="2S3">2S3</option>
+                                <option value="3S2">3S2</option>
+                                <option value="3S3">3S3</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="origin">Ciudad de Origen*</label>
+                            <div class="city-select-wrapper">
+                                <input type="text" id="originCity" name="originCity" required placeholder="Buscar ciudad..." autocomplete="off">
+                                <input type="hidden" id="origin" name="origin" required>
+                                <div id="originCityList" class="city-dropdown"></div>
+                            </div>
+                            <small>Escriba el nombre de la ciudad</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="destination">Ciudad de Destino*</label>
+                            <div class="city-select-wrapper">
+                                <input type="text" id="destinationCity" name="destinationCity" required placeholder="Buscar ciudad..." autocomplete="off">
+                                <input type="hidden" id="destination" name="destination" required>
+                                <div id="destinationCityList" class="city-dropdown"></div>
+                            </div>
+                            <small>Escriba el nombre de la ciudad</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cargo_type">Tipo de Carga</label>
+                            <select id="cargo_type" name="cargo_type">
+                                <option value="">Todos</option>
+                                <option value="GENERAL">General</option>
+                                <option value="CONTENEDOR">Contenedor</option>
+                                <option value="CARGA REFRIGERADA">Carga Refrigerada</option>
+                                <option value="GRANEL SÓLIDO">Granel Sólido</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="unit_type">Tipo de Unidad</label>
+                            <select id="unit_type" name="unit_type">
+                                <option value="">Todas</option>
+                                <option value="ESTACAS">Estacas</option>
+                                <option value="TRAYLER">Trayler</option>
+                                <option value="TERMOKING">Termoking</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logistics_hours">Horas Logísticas</label>
+                            <input type="number" id="logistics_hours" name="logistics_hours" min="0" step="0.1" value="0" placeholder="0">
+                            <small>Horas de cargue, descargue y espera</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company_name">Empresa (opcional)</label>
+                            <input type="text" id="company_name" name="company_name" placeholder="Nombre de la empresa">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Obtener Cotización</button>
+                        <button type="reset" class="btn btn-secondary">Limpiar</button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Results Section -->
+            <section id="resultsSection" class="results-section" style="display: none;">
+                <h2>Resultados de Cotización</h2>
+                <div id="resultsContainer"></div>
+            </section>
+
+            <!-- History Section -->
+            <section class="history-section">
+                <h2>Historial de Cotizaciones</h2>
+                <div class="history-controls">
+                    <button id="refreshHistory" class="btn btn-secondary">Actualizar</button>
+                    <select id="statusFilter">
+                        <option value="">Todas</option>
+                        <option value="active">Activas</option>
+                        <option value="archived">Archivadas</option>
+                    </select>
+                </div>
+                <div id="historyContainer">
+                    <p class="loading">Cargando historial...</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Liftit - Sistema de Cotización SICETAC</p>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Autenticación Requerida</h2>
+            <p>Por favor, configure su token de autenticación para continuar.</p>
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="authToken">Token de Autenticación</label>
+                    <input type="text" id="authToken" placeholder="Bearer token..." required>
+                    <small>Para desarrollo, puede usar un token de prueba o desactivar la autenticación</small>
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar y Continuar</button>
+                <button type="button" id="skipAuth" class="btn btn-secondary">Omitir (Desarrollo)</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/cities.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

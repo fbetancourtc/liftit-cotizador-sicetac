@@ -1,0 +1,345 @@
+Consulta de SiceTac desde RNDC
+Agosto 2021
+La consulta de los valores de referencia de los costos eficientes del transporte de carga por
+carretera SICETAC se puede realizar desde el webservice del RNDC y desde el portal web
+interactivo del RNDC.
+El RNDC envía un mensaje de alerta a la empresa de transporte que registre en el manifiesto
+de carga un valor a pagar por debajo del SiceTac.
+Para el caso de los de webservice
+
+Para los del portal WEB interactivo
+
+pg. 1
+
+El valor del SiceTac es un valor fijo para cada mes, por lo tanto el primer parámetro que
+debe tener en cuenta la empresa de transporte cuando hace la consulta es el AñoMes o
+Periodo.
+El valor del SiceTac está compuesto por tres datos importantes:
+-
+
+Valor de movilización
+Valor de la hora
+Valor de la tonelada de movilización
+
+El valor final del viaje se calcula con la suma del valor de movilización más el valor de los
+tiempos logísticos.
+Valor mínimo a pagar del viaje =
+Valor movilización + (valorhora * horas pactadas de cargue, descargue y de espera)
+
+Desde el portal web interactivo se debe entrar al menú de Consultas – Consultar Maestros
+
+pg. 2
+
+Después seleccionar el Maestro SiceTac
+
+Luego se debe escribir el periodo
+
+pg. 3
+
+Y aparece el resultado, el cual se puede descargar a Excel si desea el usuario
+
+La tecnología del webservice es SOAP en las siguientes url, se encuentra el wsdl:
+Rndcws.mintransporte.gov.co:8080/ws
+Rndcws2.mintransporte.gov.co:8080/ws
+La estructura del xml está compuesta por un grupo <variables> y un grupo <documento>:
+
+pg. 4
+
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<root>
+<acceso>
+<username>xxxx</username>
+<password>xxxx</password>
+</acceso>
+<solicitud>
+<tipo>2</tipo>
+<procesoid>26</procesoid>
+</solicitud>
+<variables>
+NOMBREUNIDADTRANSPORTE, NOMBRETIPOCARGA, NOMBRERUTA, VALOR, VALORTONELADA, VALORHORA, DISTANCIA
+</variables>
+<documento>
+<PERIODO>'202108'</PERIODO>
+<CONFIGURACION>'3S3'</CONFIGURACION>
+<ORIGEN>'11001000'</ORIGEN>
+<DESTINO>'5001000'</DESTINO>
+</documento>
+</root>
+
+Las variables a consultar son las que sugerimos:
+NombreUnidadTransporte,
+ValorHora, Distancia
+
+NombreTipoCarga,
+
+NombreRuta,
+
+Valor,
+
+ValorTonelada,
+
+Valor = Costo de Movilización de la carga en una ruta y una configuración
+ValorTonelada = Costo de Movilización de la Tonelada en esa ruta
+Las etiquetas del grupo <documento> : periodo, configuración, origen y destino son
+obligatorias. Los datos deben escribirse entre comillas sencillas.
+-
+
+Periodo: AñoMes (yyyymm)
+Configuración: 2, 3, 2S2, 2S3, 3S2, 3S3
+Origen (código divipola de 8 dígitos, los últimos tres deben ser 000 = cabecera
+municipal)
+Destino (código divipola de 8 dígitos, los últimos tres deben ser 000)
+
+Un ejemplo
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<root>
+<acceso>
+<username>JAIROVESGA@xxxx</username>
+<password>xxxxxxxx</password>
+</acceso>
+<solicitud>
+<tipo>2</tipo>
+<procesoid>26</procesoid>
+</solicitud>
+
+pg. 5
+
+<variables>
+RUTA, NOMBREUNIDADTRANSPORTE, NOMBRETIPOCARGA, NOMBRERUTA, VALOR, VALORTONELADA, VALORHORA, DISTANCIA
+</variables>
+<documento>
+<PERIODO>'202108'</PERIODO>
+<CONFIGURACION>'3S3'</CONFIGURACION>
+<ORIGEN>'11001000'</ORIGEN>
+<DESTINO>'5001000'</DESTINO>
+</documento>
+</root>
+
+La respuesta en xml es:
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<root>
+<documento>
+<ruta>106</ruta>
+<nombreunidadtransporte>TERMOKING</nombreunidadtransporte>
+<nombretipocarga>Carga Refrigerada</nombretipocarga>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2693308.96</valor>
+<valortonelada>79214.97</valortonelada>
+<valorhora>55118</valorhora>
+<distancia>416</distancia>
+</documento>
+<documento>
+<ruta>106</ruta>
+<nombreunidadtransporte>ESTACAS</nombreunidadtransporte>
+<nombretipocarga>Granel Sólido</nombretipocarga>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2441830.65</valor>
+<valortonelada>71818.55</valortonelada>
+<valorhora>38566.03</valorhora>
+<distancia>416</distancia>
+</documento>
+<documento>
+<ruta>106</ruta>
+<nombreunidadtransporte>ESTACAS</nombreunidadtransporte>
+<nombretipocarga>General</nombretipocarga>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2478949.67</valor>
+<valortonelada>72910.28</valortonelada>
+<valorhora>37926.89</valorhora>
+<distancia>416</distancia>
+</documento>
+<documento>
+<ruta>106</ruta>
+<nombreunidadtransporte>TRAYLER</nombreunidadtransporte>
+<nombretipocarga>Contenedor</nombretipocarga>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2478949.67</valor>
+<valortonelada>72910.28</valortonelada>
+<valorhora>37926.89</valorhora>
+<distancia>416</distancia>
+</documento>
+</root>
+
+pg. 6
+
+Si desea los datos de solo la Unidad de Transporte: ESTACAS
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<root>
+<acceso>
+<username>JAIROVESGA@1715</username>
+<password>098754321</password>
+</acceso>
+<solicitud>
+<tipo>2</tipo>
+<procesoid>26</procesoid>
+</solicitud>
+<variables>
+NOMBRETIPOCARGA, NOMBRERUTA, VALOR, VALORTONELADA, VALORHORA, DISTANCIA
+</variables>
+<documento>
+<PERIODO>'202108'</PERIODO>
+<CONFIGURACION>'3S3'</CONFIGURACION>
+<ORIGEN>'11001000'</ORIGEN>
+<DESTINO>'5001000'</DESTINO>
+<NOMBREUNIDADTRANSPORTE>'ESTACAS'</NOMBREUNIDADTRANSPORTE>
+</documento>
+</root>
+
+La respuesta es
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<root>
+<documento>
+<nombretipocarga>Granel Sólido</nombretipocarga>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2441830.65</valor>
+<valortonelada>71818.55</valortonelada>
+<valorhora>38566.03</valorhora>
+<distancia>416</distancia>
+</documento>
+<documento>
+<nombretipocarga>General</nombretipocarga>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2478949.67</valor>
+<valortonelada>72910.28</valortonelada>
+<valorhora>37926.89</valorhora>
+<distancia>416</distancia>
+</documento>
+</root>
+
+Si desea solo del tipo de carga: General y unidad de transporte: ESTACAS
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<root>
+<acceso>
+<username>JAIROVESGA@xxxx</username>
+<password>xxxxxx</password>
+</acceso>
+<solicitud>
+<tipo>2</tipo>
+<procesoid>26</procesoid>
+</solicitud>
+<variables>
+
+pg. 7
+
+NOMBRERUTA, VALOR, VALORTONELADA, VALORHORA, DISTANCIA
+</variables>
+<documento>
+<PERIODO>'202108'</PERIODO>
+<CONFIGURACION>'3S3'</CONFIGURACION>
+<ORIGEN>'11001000'</ORIGEN>
+<DESTINO>'5001000'</DESTINO>
+<NOMBREUNIDADTRANSPORTE>'ESTACAS'</NOMBREUNIDADTRANSPORTE>
+<NOMBRETIPOCARGA>'General'</NOMBRETIPOCARGA>
+</documento>
+</root>
+
+La respuesta es:
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<root>
+<documento>
+<nombreruta>BOGOTÁ _ MEDELLÍN</nombreruta>
+<valor>2478949.67</valor>
+<valortonelada>72910.28</valortonelada>
+<valorhora>37926.89</valorhora>
+<distancia>416</distancia>
+</documento>
+</root>
+
+Los posibles valores para la etiqueta: “nombretipocarga” son:
+General (Los de granel sólido se incluye en el mismo de General)
+Contenedor
+Carga Refrigerada
+Los posibles valores para la etiqueta: “nombreunidadtransporte” son:
+ESTACAS (los de Furgón se incluye en el mismo de estacas)
+TRAYLER (los tractocamiones con semirremolque)
+TERMOKING (Los que llevan carga refrigerada)
+Si se realiza la consulta de una configuración que no tiene el SiceTac aparece en la respuesta el mensaje de
+error : “Documento no encontrado”
+Un ejemplo tratando de consultar la configuración 3S1
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<root>
+<acceso>
+<username>JAIROVESGA@1715</username>
+<password>09854321</password>
+</acceso>
+<solicitud>
+<tipo>2</tipo>
+<procesoid>26</procesoid>
+</solicitud>
+<variables>
+NOMBRETIPOCARGA,NOMBRERUTA,VALOR,VALORTONELADA,VALORHORA,DISTANCIA
+</variables>
+<documento>
+<PERIODO>'202108'</PERIODO>
+<CONFIGURACION>'3S1'</CONFIGURACION>
+<ORIGEN>'11001000'</ORIGEN>
+<DESTINO>'5001000'</DESTINO>
+
+pg. 8
+
+<NOMBREUNIDADTRANSPORTE>'ESTACAS'</NOMBREUNIDADTRANSPORTE>
+<NOMBRETIPOCARGA>'General'</NOMBRETIPOCARGA>
+</documento>
+</root>
+
+La respuesta es
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<root>
+<ErrorMSG>Error RNDC11: Documento no encontrado. </ErrorMSG>
+</root>
+
+Si las empresas desean ver el detalle de los valores consultados previamente, éstas se
+pueden realizar en el Portal Logístico de Colombia.
+https://plc.mintransporte.gov.co
+
+Se da click a la funcionalidad SICETAC y se digitan los parámetros
+
+pg. 9
+
+La consulta muestra los detalles
+
+pg. 10
+
+Si las Empresas de Transporte pactan con el generador de Carga un valor que depende de
+las toneladas o Galones transportados, y así mismo, lo hacen con el tercero vinculado que
+les prestará el servicio, pueden notificar al RNDC, al momento de registrar el manifiesto,
+que el valor pactado es por: Kilogramo o por Galón. Si la empresa de transporte no envía
+ese dato, el RNDC asume que el valor pactado es por Viaje.
+Cuando el RNDC recibe esa variable llamada TIPOVALORPACTADO con una K (que significa
+kilogramo), realiza la multiplicación de la cantidad transportada por el valor de la tonelada
+de movilización del SiceTac dividido por 1000, luego le suma el valor de los tiempos de
+espera y ese resultado será el valor del viaje a comparar con el valor pactado del manifiesto.
+A continuación se muestra la pantalla que recibe la información de un manifiesto y se
+observa a la derecha del valor pactado, el nuevo campo : TipoValorPactado
+
+pg. 11
+
+Para los usuarios de webservice se muestra un ejemplo pequeño de un xml
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<root>
+<acceso>
+<username>USUARIO1</username>
+<password>PASSWORD1</password>
+</acceso>
+<solicitud>
+<tipo>1</tipo>
+<procesoid>4</procesoid>
+</solicitud>
+<variables>
+<NUMNITEMPRESATRANSPORTE>8999990554</NUMNITEMPRESATRANSPORTE>
+
+pg. 12
+
+<NUMMANIFIESTOCARGA>4564</NUMMANIFIESTOCARGA>
+<VALORFLETEPACTADOVIAJE>3560000</VALORFLETEPACTADOVIAJE>
+<TIPOVALORPACTADO>K</TIPOVALORPACTADO>
+<REMESASMAN procesoid="43">
+</REMESASMAN>
+</variables>
+</root>
+
+------- FIN ----------
+
+pg. 13
+
+

@@ -1,0 +1,14 @@
+[mcp_servers.supabase]
+command = "node"
+args = ["./scripts/mcp/supabase-mcp-server.mjs"]
+env = { }
+
+[mcp_servers.firecrawl]
+command = "npx"
+args = ["-y", "firecrawl-mcp"]
+env = { }
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["@playwright/mcp@latest"]
+env = { }

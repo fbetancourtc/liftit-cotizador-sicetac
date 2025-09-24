@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# Node/JavaScript (adjust if applicable)
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+
+# Env files
+.env
+.env.*
+
+# MCP configuration (contains sensitive tokens)
+.mcp.json
+
+# IDEs
+.vscode/
+.idea/

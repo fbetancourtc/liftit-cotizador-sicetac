@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.log
+.env
+.env.*
+.git*
+.venv/
+node_modules/
+.docs-cache/
+.DS_Store
+build/
+dist/
+
+# Large reference files can be toggled back in if required
+Consulta de SiceTac desde webservice y portal web.pdf
+docs/*.pdf

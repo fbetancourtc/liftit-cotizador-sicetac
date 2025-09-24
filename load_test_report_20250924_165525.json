@@ -1,0 +1,31 @@
+{
+  "scenario": {
+    "users": 10,
+    "duration": 30,
+    "ramp_up": 5,
+    "description": "Light load - 10 concurrent users"
+  },
+  "metrics": {
+    "total_requests": 101,
+    "successful_requests": 51,
+    "failed_requests": 50,
+    "success_rate": 50.495049504950494,
+    "requests_per_second": 2.9113497388312144,
+    "min_response_time": 0.9672641754150391,
+    "max_response_time": 669.6586608886719,
+    "mean_response_time": 42.45382724422039,
+    "median_response_time": 20.289182662963867,
+    "stdev_response_time": 103.12409400823995,
+    "p50": 20.289182662963867,
+    "p75": 27.048110961914062,
+    "p90": 61.60783767700195,
+    "p95": 245.80097198486328,
+    "p99": 527.6510715484619,
+    "test_duration": 34.69181275367737
+  },
+  "status_codes": {
+    "200": 51,
+    "502": 50
+  },
+  "timestamp": "20250924_165525"
+}

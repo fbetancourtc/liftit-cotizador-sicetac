@@ -1,0 +1,44 @@
+SICETAC PRODUCTION VALIDATION REPORT
+Generated: 2025-09-24 16:54:34.757080
+============================================================
+
+Total Tests: 21
+Passed: 13
+Failed: 8
+Warnings: 0
+Pass Rate: 61.9%
+
+ERRORS:
+  - DATABASE_URL is not set
+  - REDIS_URL is not set
+  - SICETAC_USERNAME is not set
+  - SICETAC_PASSWORD is not set
+  - SECRET_KEY is not set
+  - Connection failed: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sicetac_user" does not exist
+
+  - Connection failed: Error 61 connecting to localhost:6379. Connection refused.
+  - Status 502: {"detail":"Failed to parse response from Sicetac"}
+
+DETAILED RESULTS:
+  [01] FAIL: DATABASE_URL is not set
+  [02] FAIL: REDIS_URL is not set
+  [03] FAIL: SICETAC_USERNAME is not set
+  [04] FAIL: SICETAC_PASSWORD is not set
+  [05] FAIL: SECRET_KEY is not set
+  [06] FAIL: Connection failed: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sicetac_user" does not exist
+
+  [07] FAIL: Connection failed: Error 61 connecting to localhost:6379. Connection refused.
+  [08] PASS: Status 200
+  [09] PASS: Status 200
+  [10] PASS: Status 200
+  [11] PASS: Status 200
+  [12] FAIL: Status 502: {"detail":"Failed to parse response from Sicetac"}
+  [13] PASS: Cities data loaded
+  [14] PASS: Found 73 cities
+  [15] PASS: CORS headers present
+  [16] PASS: Input validation working
+  [17] PASS: Average response: 6.61ms
+  [18] PASS: Backup script found
+  [19] PASS: Backup directory exists
+  [20] PASS: Log directory exists
+  [21] PASS: Health metrics available
