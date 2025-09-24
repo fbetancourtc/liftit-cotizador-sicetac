@@ -1,26 +1,16 @@
 {
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/index.py",
-      "use": "@vercel/python"
+      "source": "/static/(.*)",
+      "destination": "/app/static/$1"
     },
     {
-      "src": "app/static/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/app/static/$1"
+      "source": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))$",
+      "destination": "/app/static/$1"
     },
     {
-      "src": "/(.*\\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))$",
-      "dest": "/app/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.py"
+      "source": "/(.*)",
+      "destination": "/api"
     }
   ],
   "functions": {
@@ -28,16 +18,5 @@
       "maxDuration": 30,
       "runtime": "python3.11"
     }
-  },
-  "env": {
-    "ENVIRONMENT": "production",
-    "DATABASE_URL": "@database_url",
-    "SICETAC_USERNAME": "@sicetac_username",
-    "SICETAC_PASSWORD": "@sicetac_password",
-    "SICETAC_ENDPOINT": "@sicetac_endpoint",
-    "SICETAC_TIMEOUT_SECONDS": "@sicetac_timeout",
-    "SICETAC_VERIFY_SSL": "@sicetac_verify_ssl",
-    "SUPABASE_PROJECT_URL": "@supabase_url",
-    "SUPABASE_JWT_AUDIENCE": "@supabase_jwt_audience"
   }
 }
