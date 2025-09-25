@@ -16,12 +16,35 @@
     flex: 1;
 }
 
-.period-display {
-    display: block;
-    margin-top: 0.25rem;
-    color: var(--liftit-primary);
+.btn-today {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--liftit-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
     font-weight: 500;
-    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-today:hover {
+    background: #f26334;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(242, 79, 34, 0.3);
+}
+
+.btn-today:active {
+    transform: translateY(0);
+}
+
+.btn-today svg {
+    width: 16px;
+    height: 16px;
 }
 
 /* Header Styles */

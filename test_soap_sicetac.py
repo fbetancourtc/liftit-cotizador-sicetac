@@ -23,17 +23,20 @@ def test_soap_sicetac():
     <password>{settings.sicetac_password}</password>
   </acceso>
   <solicitud>
-    <tipo>2</tipo>
+    <tipo>1</tipo>
     <procesoid>26</procesoid>
   </solicitud>
   <variables>
     RUTA, NOMBREUNIDADTRANSPORTE, NOMBRETIPOCARGA, NOMBRERUTA, VALOR, VALORTONELADA, VALORHORA, DISTANCIA
   </variables>
   <documento>
-    <PERIODO>'202412'</PERIODO>
-    <CONFIGURACION>'C2'</CONFIGURACION>
-    <ORIGEN>'11001000'</ORIGEN>
-    <DESTINO>'05001000'</DESTINO>
+    <NUMNITEMPRESATRANSPORTE>900559843-7</NUMNITEMPRESATRANSPORTE>
+    <PERIODO>202501</PERIODO>
+    <CONFIGURACION>3S3</CONFIGURACION>
+    <ORIGEN>11001000</ORIGEN>
+    <DESTINO>05001000</DESTINO>
+    <NOMBREUNIDADTRANSPORTE>ESTACAS</NOMBREUNIDADTRANSPORTE>
+    <NOMBRETIPOCARGA>GENERAL</NOMBRETIPOCARGA>
   </documento>
 </root>"""
 
@@ -59,6 +62,9 @@ def test_soap_sicetac():
 
     print("\n📝 Sending SOAP envelope (first 500 chars):")
     print(soap_payload[:500] + "...")
+
+    print("\n🔍 Escaped XML content:")
+    print(escaped_xml[:600] + "...")
 
     headers = {
         "Content-Type": "text/xml; charset=ISO-8859-1",

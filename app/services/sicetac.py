@@ -62,21 +62,20 @@ class SicetacClient:
         logger.debug(f"Variables requested: {variable_string}")
 
         document_lines = [
-            f"<NUMNITEMPRESATRANSPORTE>900982995</NUMNITEMPRESATRANSPORTE>",
-            f"<PERIODO>{quote_request.period}</PERIODO>",
-            f"<CONFIGURACION>{quote_request.configuration}</CONFIGURACION>",
-            f"<ORIGEN>{quote_request.origin}</ORIGEN>",
-            f"<DESTINO>{quote_request.destination}</DESTINO>",
+            f"<PERIODO>'{quote_request.period}'</PERIODO>",
+            f"<CONFIGURACION>'{quote_request.configuration}'</CONFIGURACION>",
+            f"<ORIGEN>'{quote_request.origin}'</ORIGEN>",
+            f"<DESTINO>'{quote_request.destination}'</DESTINO>",
         ]
         if quote_request.unit_type:
             logger.debug(f"Adding unit type filter: {quote_request.unit_type}")
             document_lines.append(
-                f"<NOMBREUNIDADTRANSPORTE>{quote_request.unit_type.upper()}</NOMBREUNIDADTRANSPORTE>"
+                f"<NOMBREUNIDADTRANSPORTE>'{quote_request.unit_type.upper()}'</NOMBREUNIDADTRANSPORTE>"
             )
         if quote_request.cargo_type:
             logger.debug(f"Adding cargo type filter: {quote_request.cargo_type}")
             document_lines.append(
-                f"<NOMBRETIPOCARGA>{quote_request.cargo_type.upper()}</NOMBRETIPOCARGA>"
+                f"<NOMBRETIPOCARGA>'{quote_request.cargo_type.upper()}'</NOMBRETIPOCARGA>"
             )
 
         document_section = "\n    ".join(document_lines)
@@ -89,7 +88,7 @@ class SicetacClient:
     <password>{self.settings.sicetac_password}</password>
   </acceso>
   <solicitud>
-    <tipo>1</tipo>
+    <tipo>2</tipo>
     <procesoid>26</procesoid>
   </solicitud>
   <variables>
@@ -100,6 +99,9 @@ class SicetacClient:
   </documento>
 </root>"""
 
+        # Escape inner XML for SOAP
+        escaped_xml = inner_xml.replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+
         # Wrap in SOAP envelope for RPC style
         payload = f"""<?xml version="1.0" encoding="ISO-8859-1"?>
 <SOAP-ENV:Envelope
@@ -108,7 +110,7 @@ class SicetacClient:
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SOAP-ENV:Body SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
     <NS1:AtenderMensajeRNDC xmlns:NS1="urn:BPMServicesIntf-IBPMServices">
-      <Request xsi:type="xsd:string">{inner_xml.replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')}</Request>
+      <Request xsi:type="xsd:string">{escaped_xml}</Request>
     </NS1:AtenderMensajeRNDC>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>"""

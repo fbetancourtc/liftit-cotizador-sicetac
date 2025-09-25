@@ -201,17 +201,17 @@ function initializePeriodSelector() {
     const monthSelect = document.getElementById('periodMonth');
     const yearSelect = document.getElementById('periodYear');
     const periodInput = document.getElementById('period');
-    const periodDisplay = document.getElementById('periodDisplay');
 
     if (!monthSelect || !yearSelect || !periodInput) {
         return;
     }
 
-    // Populate year dropdown (from 2020 to next year)
+    // Get current date
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
 
+    // Populate year dropdown (from 2020 to next year)
     for (let year = 2020; year <= currentYear + 1; year++) {
         const option = document.createElement('option');
         option.value = year.toString();
@@ -220,10 +220,11 @@ function initializePeriodSelector() {
     }
 
     // Set current month and year as default
-    monthSelect.value = currentMonth.toString().padStart(2, '0');
+    const currentMonthString = currentMonth.toString().padStart(2, '0');
+    monthSelect.value = currentMonthString;
     yearSelect.value = currentYear.toString();
 
-    // Update the hidden period input and display
+    // Update the hidden period input
     function updatePeriod() {
         const month = monthSelect.value;
         const year = yearSelect.value;
@@ -232,21 +233,60 @@ function initializePeriodSelector() {
             const periodValue = `${year}${month}`;
             periodInput.value = periodValue;
 
-            // Update display text
+            // Log for debugging
             const monthName = monthSelect.options[monthSelect.selectedIndex].text;
-            periodDisplay.textContent = `Período seleccionado: ${monthName} ${year} (${periodValue})`;
+            debugLog(`Period set to: ${periodValue} (${monthName} ${year})`);
         } else {
             periodInput.value = '';
-            periodDisplay.textContent = '';
         }
+    }
+
+    // Function to reset to current period
+    function setToCurrentPeriod() {
+        monthSelect.value = currentMonthString;
+        yearSelect.value = currentYear.toString();
+        updatePeriod();
+    }
+
+    // Add Today button functionality and update its text
+    const todayBtn = document.getElementById('todayBtn');
+    if (todayBtn) {
+        // Get month names in Spanish
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+                          'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+        // Update button text to show current month/year
+        const currentMonthName = monthNames[currentMonth - 1];
+        todayBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+                <circle cx="12" cy="16" r="1" fill="currentColor"></circle>
+            </svg>
+            ${currentMonthName} ${currentYear}
+        `;
+
+        todayBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            setToCurrentPeriod();
+        });
     }
 
     // Add event listeners
     monthSelect.addEventListener('change', updatePeriod);
     yearSelect.addEventListener('change', updatePeriod);
 
-    // Initialize with current values
+    // Initialize with current values and ensure visual update
     updatePeriod();
+
+    // Log initialization
+    debugLog('Period selector initialized with current date:', {
+        month: currentMonthString,
+        year: currentYear,
+        periodValue: `${currentYear}${currentMonthString}`
+    });
 }
 
 // Initialize the application
