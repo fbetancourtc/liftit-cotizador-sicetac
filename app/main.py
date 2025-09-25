@@ -5,39 +5,75 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
+import logging
+import sys
+from datetime import datetime
 
 from app.api.routes import router as api_router
 from app.core.config import get_settings
 from app.models.database import init_database
 
+# Configure logging with detailed format
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.StreamHandler(sys.stderr)
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
 
 def create_app() -> FastAPI:
+    logger.info("=" * 80)
+    logger.info(f"Starting SICETAC Application - {datetime.now()}")
+    logger.info("=" * 80)
+
     settings = get_settings()
+    logger.debug(f"Environment: {settings.environment}")
+    logger.debug(f"App Name: {settings.app_name}")
+
     # Set root_path for subpath deployment
     root_path = os.environ.get('BASE_PATH', '/sicetac')
+    logger.info(f"Base path configured: {root_path}")
+
     app = FastAPI(
         title=settings.app_name,
         description="MVP FastAPI service for Sicetac quotations",
         version="1.0.0",
         root_path=root_path
     )
+    logger.info("FastAPI application created successfully")
 
+    cors_origins = ["*", "https://micarga.flexos.ai"]
+    logger.info(f"Configuring CORS with origins: {cors_origins}")
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*", "https://micarga.flexos.ai"],
+        allow_origins=cors_origins,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    logger.debug("CORS middleware configured")
 
+    logger.info("Including API router at /api")
     app.include_router(api_router, prefix="/api")
+    logger.debug("API router included successfully")
 
     # Mount static files for the frontend - for local development
-    if os.path.exists("app/static"):
+    static_path = "app/static"
+    if os.path.exists(static_path):
+        logger.info(f"Static directory found at {static_path}")
         # For local development, mount at /static for direct access
-        app.mount("/static", StaticFiles(directory="app/static"), name="static")
+        app.mount("/static", StaticFiles(directory=static_path), name="static")
+        logger.debug("Static files mounted at /static")
         # Also mount at /sicetac/static for compatibility with production paths
-        app.mount("/sicetac/static", StaticFiles(directory="app/static"), name="sicetac_static")
+        app.mount("/sicetac/static", StaticFiles(directory=static_path), name="sicetac_static")
+        logger.debug("Static files mounted at /sicetac/static")
+    else:
+        logger.warning(f"Static directory not found at {static_path}")
 
     @app.get("/", tags=["ops"])
     async def root():
@@ -48,15 +84,18 @@ def create_app() -> FastAPI:
 
     @app.get("/api/config", tags=["ops"])
     async def get_config():
+        logger.debug("Config endpoint called")
         # Return public configuration for the frontend
         # Handle missing or default values gracefully
         url = settings.supabase_project_url if settings.supabase_project_url != "https://your-project-ref.supabase.co" else ""
         key = settings.supabase_anon_key if settings.supabase_anon_key else ""
 
-        return {
+        config_data = {
             "supabase_url": url,
             "supabase_anon_key": key
         }
+        logger.debug(f"Returning config (url present: {bool(url)}, key present: {bool(key)})")
+        return config_data
 
     @app.get("/app", tags=["ops"])
     async def app_page():
@@ -81,8 +120,20 @@ def create_app() -> FastAPI:
 
     @app.on_event("startup")
     async def startup_event():
-        # Initialize database tables
-        init_database()
+        logger.info("Starting up application...")
+        try:
+            # Initialize database tables
+            init_database()
+            logger.info("Database initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize database: {str(e)}", exc_info=True)
+            raise
+
+        # Log environment info
+        logger.info(f"SICETAC Endpoint: {settings.sicetac_endpoint}")
+        logger.info(f"SICETAC Username configured: {bool(settings.sicetac_username)}")
+        logger.info(f"Supabase URL: {settings.supabase_project_url}")
+        logger.info("Application startup complete")
 
     return app
 

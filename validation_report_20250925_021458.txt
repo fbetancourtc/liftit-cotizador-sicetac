@@ -1,0 +1,43 @@
+SICETAC PRODUCTION VALIDATION REPORT
+Generated: 2025-09-25 02:14:58.404142
+============================================================
+
+Total Tests: 25
+Passed: 20
+Failed: 3
+Warnings: 2
+Pass Rate: 80.0%
+
+ERRORS:
+  - Status 404
+  - Status 502: {"detail":"Failed to parse response from Sicetac"}
+  - Cities data not found
+
+WARNINGS:
+  - Only 0 indexes found (expected 5+)
+  - Only 0 cities found (expected 70+)
+
+DETAILED RESULTS:
+  [01] PASS: DATABASE_URL is set
+  [02] PASS: REDIS_URL is set
+  [03] PASS: SICETAC_USERNAME is set
+  [04] PASS: SICETAC_PASSWORD is set
+  [05] PASS: SECRET_KEY is set
+  [06] PASS: Connected to PostgreSQL
+  [07] PASS: Table exists with 0 records
+  [08] PASS: Table exists with 0 records
+  [10] PASS: Connected to Redis
+  [11] PASS: Cache read/write working
+  [12] PASS: Status 200
+  [13] PASS: Status 200
+  [14] PASS: Status 200
+  [15] FAIL: Status 404
+  [16] FAIL: Status 502: {"detail":"Failed to parse response from Sicetac"}
+  [17] FAIL: Cities data not found
+  [19] PASS: CORS headers present
+  [20] PASS: Input validation working
+  [21] PASS: Average response: 6.32ms
+  [22] PASS: Backup script found
+  [23] PASS: Backup directory exists
+  [24] PASS: Log directory exists
+  [25] PASS: Health metrics available
