@@ -1,5 +1,6 @@
 // Authentication handling
-const API_BASE = '/api';
+// Use configuration from config.js if available
+const API_BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : '/sicetac/api';
 
 // Tab switching
 function switchTab(tab) {
@@ -81,7 +82,7 @@ function getAuthToken() {
 
 // Redirect to dashboard if already authenticated
 if (isAuthenticated()) {
-    window.location.href = '/';
+    window.location.href = window.APP_CONFIG ? window.APP_CONFIG.ROUTES.LOGIN : '/sicetac';
 }
 
 // Handle login form submission
@@ -113,7 +114,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         showAlert('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
 
         setTimeout(() => {
-            window.location.href = '/';
+            window.location.href = window.APP_CONFIG ? window.APP_CONFIG.ROUTES.LOGIN : '/sicetac';
         }, 1500);
 
     } catch (error) {
@@ -170,7 +171,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
             storeAuth(data);
             showAlert('¡Registro exitoso! Redirigiendo...', 'success');
             setTimeout(() => {
-                window.location.href = '/';
+                window.location.href = window.APP_CONFIG ? window.APP_CONFIG.ROUTES.LOGIN : '/sicetac';
             }, 1500);
         }
 
@@ -186,7 +187,7 @@ async function refreshAuthToken() {
     const refreshToken = localStorage.getItem('refresh_token');
     if (!refreshToken) {
         clearAuth();
-        window.location.href = '/login';
+        window.location.href = window.APP_CONFIG ? window.APP_CONFIG.ROUTES.LOGIN : '/sicetac';
         return null;
     }
 
@@ -209,7 +210,7 @@ async function refreshAuthToken() {
 
     } catch (error) {
         clearAuth();
-        window.location.href = '/login';
+        window.location.href = window.APP_CONFIG ? window.APP_CONFIG.ROUTES.LOGIN : '/sicetac';
         return null;
     }
 }

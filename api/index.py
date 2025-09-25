@@ -15,19 +15,18 @@ os.environ.setdefault('SICETAC_USERNAME', 'test')
 os.environ.setdefault('SICETAC_PASSWORD', 'test')
 os.environ.setdefault('SICETAC_ENDPOINT', 'http://rndcws.mintransporte.gov.co:8080/ws/rndcService')
 
-try:
-    # Try to import the FastAPI app
-    from app.main import create_app
-    # Create the FastAPI application instance
-    app = create_app()
-except Exception as e:
-    print(f"Error creating main app: {e}")
-    # Fallback to a minimal working app if main app fails
+# Temporarily use minimal app to debug the issue
+if True:  # Force minimal app for debugging
+    # Fallback to a minimal working app for debugging
+    print(f"Using minimal app for debugging")
     from fastapi import FastAPI
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.responses import JSONResponse, FileResponse
 
-    app = FastAPI(title="SICETAC Quotation System - Fallback Mode")
+    app = FastAPI(
+        title="SICETAC Quotation System - Fallback Mode",
+        root_path=os.environ.get('BASE_PATH', '/sicetac')
+    )
 
     app.add_middleware(
         CORSMiddleware,
@@ -37,9 +36,13 @@ except Exception as e:
         allow_headers=["*"],
     )
 
-    @app.get("/api/healthz")
+    @app.get("/api/health")
     async def health_check():
-        return {"status": "ok", "message": "Service is running in fallback mode"}
+        return {"status": "ok", "message": "Service is running in fallback mode", "mode": "debug"}
+
+    @app.get("/api/healthz")
+    async def healthz_check():
+        return {"status": "ok", "message": "Service is running in fallback mode", "mode": "debug"}
 
     @app.get("/api/config")
     async def get_config():

@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    {
+      "source": "/sicetac",
+      "destination": "https://liftit-cotizador-sicetac-d0c8vl3fg-fbetancourtcs-projects.vercel.app/sicetac"
+    },
+    {
+      "source": "/sicetac/(.*)",
+      "destination": "https://liftit-cotizador-sicetac-d0c8vl3fg-fbetancourtcs-projects.vercel.app/sicetac/$1"
+    }
+  ]
+}
+
+// If there's already a vercel.json with other rewrites, just add these two rules to the existing rewrites array

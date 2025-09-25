@@ -13,15 +13,18 @@ from app.models.database import init_database
 
 def create_app() -> FastAPI:
     settings = get_settings()
+    # Set root_path for subpath deployment
+    root_path = os.environ.get('BASE_PATH', '/sicetac')
     app = FastAPI(
         title=settings.app_name,
         description="MVP FastAPI service for Sicetac quotations",
-        version="1.0.0"
+        version="1.0.0",
+        root_path=root_path
     )
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=["*", "https://micarga.flexos.ai"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -29,9 +32,12 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router, prefix="/api")
 
-    # Mount static files for the frontend
+    # Mount static files for the frontend - for local development
     if os.path.exists("app/static"):
+        # For local development, mount at /static for direct access
         app.mount("/static", StaticFiles(directory="app/static"), name="static")
+        # Also mount at /sicetac/static for compatibility with production paths
+        app.mount("/sicetac/static", StaticFiles(directory="app/static"), name="sicetac_static")
 
     @app.get("/", tags=["ops"])
     async def root():

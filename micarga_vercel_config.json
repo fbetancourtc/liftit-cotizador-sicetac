@@ -1,0 +1,13 @@
+{
+  "rewrites": [
+    {
+      "source": "/sicetac",
+      "destination": "https://liftit-cotizador-sicetac-d0c8vl3fg-fbetancourtcs-projects.vercel.app/sicetac"
+    },
+    {
+      "source": "/sicetac/(.*)",
+      "destination": "https://liftit-cotizador-sicetac-d0c8vl3fg-fbetancourtcs-projects.vercel.app/sicetac/$1"
+    }
+    // ... other existing rewrites for the main micarga app
+  ]
+}

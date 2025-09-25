@@ -6,6 +6,7 @@
     <base href="/sicetac/">
     <title>SICETAC - Dashboard de Monitoreo</title>
     <script src="/sicetac/static/config.js"></script>
+    <link rel="stylesheet" href="/sicetac/static/liftit-design-system.css">
     <style>
         * {
             margin: 0;
@@ -14,8 +15,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: var(--liftit-font-family, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif);
+            background: linear-gradient(135deg, var(--liftit-primary, #2B3492) 0%, var(--liftit-primary-dark, #1e2670) 100%);
             color: #333;
             min-height: 100vh;
             padding: 20px;
@@ -39,7 +40,7 @@
 
         .dashboard-title {
             font-size: 28px;
-            color: #1e3c72;
+            color: var(--liftit-primary, #2B3492);
             font-weight: 600;
         }
 
@@ -109,7 +110,7 @@
         .metric-value {
             font-size: 32px;
             font-weight: 600;
-            color: #1e3c72;
+            color: var(--liftit-primary, #2B3492);
             margin-bottom: 5px;
         }
 
@@ -246,7 +247,7 @@
         }
 
         .refresh-btn {
-            background: #1e3c72;
+            background: var(--liftit-primary, #2B3492);
             color: white;
             border: none;
             padding: 10px 20px;
@@ -257,7 +258,7 @@
         }
 
         .refresh-btn:hover {
-            background: #2a5298;
+            background: var(--liftit-primary-dark, #1e2670);
         }
 
         .performance-grid {
@@ -282,7 +283,7 @@
         .perf-value {
             font-size: 24px;
             font-weight: 600;
-            color: #1e3c72;
+            color: var(--liftit-primary, #2B3492);
         }
 
         .perf-unit {
@@ -291,14 +292,376 @@
             margin-left: 4px;
         }
 
-        @media (max-width: 768px) {
+        /* Responsive Design - Mobile First Approach */
+
+        /* Small Mobile (320px - 374px) */
+        @media (max-width: 374px) {
+            body {
+                padding: 10px;
+            }
+
+            .dashboard-container {
+                padding: 0;
+            }
+
+            .dashboard-header {
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            .dashboard-title {
+                font-size: 18px;
+            }
+
+            .dashboard-title img {
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .metric-value {
+                font-size: 24px;
+            }
+
+            .refresh-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Mobile (375px - 767px) */
+        @media (max-width: 767px) {
+            body {
+                padding: 15px;
+                min-height: 100vh;
+            }
+
             .dashboard-header {
                 flex-direction: column;
                 gap: 15px;
+                padding: 15px 20px;
+                text-align: center;
+            }
+
+            .dashboard-title {
+                font-size: clamp(20px, 5vw, 24px);
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+            }
+
+            .dashboard-title img {
+                width: 50px !important;
+                height: 50px !important;
+                margin: 0 auto;
+            }
+
+            .dashboard-status {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
             }
 
             .dashboard-grid {
                 grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .metric-card {
+                padding: 15px;
+            }
+
+            .metric-value {
+                font-size: 28px;
+            }
+
+            .metric-title {
+                font-size: 12px;
+            }
+
+            .metric-icon {
+                font-size: 20px;
+            }
+
+            .chart-container {
+                padding: 15px;
+            }
+
+            .chart-title {
+                font-size: 16px;
+            }
+
+            .health-checks {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .health-item {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+                background: white;
+                border-radius: 6px;
+            }
+
+            .health-label {
+                font-size: 12px;
+                margin-top: 5px;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .perf-item {
+                padding: 12px;
+                text-align: center;
+            }
+
+            .perf-value {
+                font-size: 20px;
+            }
+
+            .activity-log {
+                padding: 15px;
+            }
+
+            .activity-title {
+                font-size: 16px;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .activity-text {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .activity-status {
+                display: inline-block;
+                margin-bottom: 5px;
+            }
+
+            .activity-time {
+                font-size: 11px;
+                align-self: flex-end;
+            }
+
+            .refresh-btn {
+                padding: 10px 16px;
+                font-size: 13px;
+                border-radius: 4px;
+                min-width: 120px;
+                min-height: 44px; /* Touch target */
+            }
+
+            #systemStatus {
+                font-size: 14px;
+            }
+        }
+
+        /* Tablet (768px - 1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            body {
+                padding: 20px;
+            }
+
+            .dashboard-container {
+                max-width: 100%;
+            }
+
+            .dashboard-header {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 20px 25px;
+            }
+
+            .dashboard-title {
+                font-size: 24px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+
+            .metric-card {
+                padding: 18px;
+            }
+
+            .metric-value {
+                font-size: 30px;
+            }
+
+            .health-checks {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .chart-container {
+                padding: 20px;
+            }
+
+            .activity-log {
+                padding: 20px;
+            }
+
+            .activity-item {
+                flex-direction: row;
+                padding: 12px;
+            }
+        }
+
+        /* Desktop (1024px - 1439px) */
+        @media (min-width: 1024px) and (max-width: 1439px) {
+            .dashboard-container {
+                max-width: 1200px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 18px;
+            }
+
+            .health-checks {
+                grid-template-columns: repeat(5, 1fr);
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        /* Large Desktop (1440px+) */
+        @media (min-width: 1440px) {
+            .dashboard-container {
+                max-width: 1400px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+
+            .metric-card {
+                padding: 24px;
+            }
+
+            .metric-value {
+                font-size: 36px;
+            }
+        }
+
+        /* High DPI / Retina Displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .status-indicator {
+                border: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .metric-card,
+            .chart-container,
+            .activity-log {
+                box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+            }
+        }
+
+        /* Landscape Mobile */
+        @media (max-width: 767px) and (orientation: landscape) {
+            body {
+                padding: 10px;
+            }
+
+            .dashboard-header {
+                padding: 10px 15px;
+            }
+
+            .dashboard-title {
+                font-size: 18px;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .metric-card {
+                padding: 12px;
+            }
+
+            .metric-value {
+                font-size: 24px;
+            }
+
+            .health-checks {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .performance-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .dashboard-header {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+
+            .refresh-btn {
+                display: none;
+            }
+
+            .status-indicator {
+                animation: none;
+            }
+
+            .metric-card,
+            .chart-container,
+            .activity-log {
+                box-shadow: none;
+                border: 1px solid #ddd;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Accessibility - Focus States */
+        .refresh-btn:focus,
+        .health-item:focus,
+        .activity-item:focus {
+            outline: 2px solid var(--liftit-primary, #2B3492);
+            outline-offset: 2px;
+        }
+
+        /* Smooth Scrolling for Mobile */
+        @media (max-width: 767px) {
+            html {
+                scroll-behavior: smooth;
+            }
+
+            .dashboard-container {
+                scroll-snap-type: y proximity;
+            }
+
+            .metric-card,
+            .chart-container,
+            .activity-log {
+                scroll-snap-align: start;
             }
         }
     </style>
@@ -306,7 +669,10 @@
 <body>
     <div class="dashboard-container">
         <div class="dashboard-header">
-            <h1 class="dashboard-title">📊 Dashboard de Monitoreo - SICETAC</h1>
+            <h1 class="dashboard-title" style="display: flex; align-items: center; gap: 1rem;">
+                <img src="/sicetac/static/liftit-logo.svg" alt="Liftit Logo" style="width: 60px; height: 60px; border-radius: 12px; background: white; padding: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);">
+                Dashboard de Monitoreo - SICETAC
+            </h1>
             <div class="dashboard-status">
                 <span id="systemStatus">Sistema Operacional</span>
                 <div class="status-indicator status-online" id="statusIndicator"></div>

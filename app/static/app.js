@@ -468,10 +468,16 @@ function initializeCitySelector(type) {
             e.preventDefault();
             selectedIndex = Math.max(selectedIndex - 1, 0);
             highlightOption(options, selectedIndex);
-        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        } else if (e.key === 'Enter') {
             e.preventDefault();
-            if (options[selectedIndex]) {
+
+            // If user navigated with arrows, select the highlighted option
+            if (selectedIndex >= 0 && options[selectedIndex]) {
                 selectCity(options[selectedIndex], input, hiddenInput, dropdown);
+            }
+            // If there's only one option and no selection, auto-select it
+            else if (options.length === 1) {
+                selectCity(options[0], input, hiddenInput, dropdown);
             }
         } else if (e.key === 'Escape') {
             dropdown.classList.remove('active');
