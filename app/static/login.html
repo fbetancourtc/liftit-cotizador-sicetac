@@ -6,6 +6,7 @@
     <base href="/sicetac/">
     <title>Login - Liftit Cotizador SICETAC</title>
     <script src="/sicetac/static/config.js"></script>
+    <link rel="stylesheet" href="/sicetac/static/liftit-design-system.css">
     <style>
         * {
             margin: 0;
@@ -14,22 +15,22 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--liftit-primary) 0%, var(--liftit-primary-dark) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: var(--liftit-font-family);
         }
 
         .login-container {
             max-width: 400px;
             width: 100%;
             margin: 2rem;
-            padding: 3rem 2rem;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: var(--liftit-spacing-xxl) var(--liftit-spacing-xl);
+            background: var(--liftit-bg-secondary);
+            border-radius: var(--liftit-border-radius-lg);
+            box-shadow: var(--liftit-shadow-lg);
         }
 
         .login-header {
@@ -38,46 +39,58 @@
         }
 
         .logo {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto var(--liftit-spacing-xl);
+            display: block;
+            border-radius: 20px;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
         }
 
         .login-header h1 {
-            color: #1a202c;
-            margin-bottom: 0.5rem;
-            font-size: 1.75rem;
+            color: var(--liftit-text-primary);
+            margin-bottom: var(--liftit-spacing-sm);
+            font-size: 2rem;
             font-weight: 700;
         }
 
         .login-header p {
-            color: #718096;
-            font-size: 0.95rem;
+            color: var(--liftit-text-secondary);
+            font-size: var(--liftit-font-size-base);
         }
 
         .google-btn {
             width: 100%;
             padding: 14px 16px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 500;
+            background: var(--liftit-bg-secondary);
+            border: 2px solid var(--liftit-border-color);
+            border-radius: var(--liftit-border-radius);
+            font-size: var(--liftit-font-size-base);
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--liftit-transition);
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            color: #2d3748;
+            gap: var(--liftit-spacing-md);
+            color: var(--liftit-text-primary);
             text-decoration: none;
-            margin-bottom: 1rem;
+            margin-bottom: var(--liftit-spacing-md);
         }
 
         .google-btn:hover {
-            background: #f7fafc;
-            border-color: #cbd5e0;
+            background: var(--liftit-bg-light);
+            border-color: var(--liftit-primary);
+            color: var(--liftit-primary);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: var(--liftit-shadow);
         }
 
         .google-btn:active {
@@ -97,52 +110,53 @@
 
 
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: var(--liftit-spacing-lg);
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #4a5568;
+            margin-bottom: var(--liftit-spacing-sm);
+            color: var(--liftit-text-secondary);
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: var(--liftit-font-size-sm);
         }
 
         .form-group input {
             width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
+            padding: var(--liftit-spacing-md);
+            border: 2px solid var(--liftit-border-color);
+            border-radius: var(--liftit-border-radius);
+            font-size: var(--liftit-font-size-base);
+            transition: var(--liftit-transition);
         }
 
         .form-group input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--liftit-primary);
+            box-shadow: 0 0 0 3px rgba(43, 52, 146, 0.1);
         }
 
         .btn-primary {
             width: 100%;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 12px 24px;
+            background: var(--liftit-primary);
+            color: var(--liftit-text-white);
             border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: var(--liftit-border-radius);
+            font-size: var(--liftit-font-size-base);
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--liftit-transition);
         }
 
         .btn-primary:hover {
+            background: var(--liftit-primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: var(--liftit-shadow);
         }
 
         .btn-primary:disabled {
-            background: #cbd5e0;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
@@ -156,27 +170,27 @@
         }
 
         .alert-error {
-            background: #fed7d7;
-            color: #9b2c2c;
-            border: 1px solid #fc8181;
+            background: var(--liftit-error-light);
+            color: #c62828;
+            border: 1px solid var(--liftit-error);
         }
 
         .alert-success {
-            background: #c6f6d5;
-            color: #22543d;
-            border: 1px solid #9ae6b4;
+            background: var(--liftit-success-light);
+            color: #2e7d32;
+            border: 1px solid var(--liftit-success);
         }
 
         .alert-info {
-            background: #bee3f8;
-            color: #2c5282;
-            border: 1px solid #90cdf4;
+            background: var(--liftit-info-light);
+            color: #0277bd;
+            border: 1px solid var(--liftit-info);
         }
 
         .alert-warning {
-            background: #fef5e7;
+            background: var(--liftit-warning-light);
             color: #8b6914;
-            border: 1px solid #f9e79f;
+            border: 1px solid var(--liftit-warning);
         }
 
         .loading {
@@ -190,8 +204,8 @@
         }
 
         .spinner {
-            border: 3px solid #e2e8f0;
-            border-top: 3px solid #667eea;
+            border: 3px solid var(--liftit-border-color);
+            border-top: 3px solid var(--liftit-primary);
             border-radius: 50%;
             width: 30px;
             height: 30px;
@@ -206,24 +220,24 @@
 
         .footer-info {
             text-align: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            color: #718096;
-            font-size: 0.85rem;
+            margin-top: var(--liftit-spacing-xl);
+            padding-top: var(--liftit-spacing-lg);
+            border-top: 1px solid var(--liftit-border-color);
+            color: var(--liftit-text-secondary);
+            font-size: var(--liftit-font-size-sm);
         }
 
         .init-message {
             text-align: center;
-            padding: 1rem;
-            color: #718096;
+            padding: var(--liftit-spacing-lg);
+            color: var(--liftit-text-secondary);
         }
     </style>
 </head>
 <body>
     <div class="login-container">
         <div class="login-header">
-            <div class="logo">🚚</div>
+            <img src="/sicetac/static/liftit-logo.svg" alt="Liftit Logo" class="logo">
             <h1>Liftit Cotizador</h1>
             <p>Sistema de cotización SICETAC</p>
         </div>

@@ -6,26 +6,30 @@
     <base href="/sicetac/">
     <title>Liftit - Cotizador SICETAC</title>
     <script src="/sicetac/static/config.js"></script>
+    <link rel="stylesheet" href="/sicetac/static/liftit-design-system.css">
     <link rel="stylesheet" href="/sicetac/static/styles.css">
 </head>
 <body>
     <div class="container">
         <header>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1>🚚 Liftit Cotizador SICETAC</h1>
-                    <p>Sistema de cotización de tarifas de transporte de carga</p>
+                <div class="header-brand">
+                    <img src="/sicetac/static/liftit-logo.svg" alt="Liftit Logo" class="header-logo">
+                    <div class="header-text">
+                        <h1>Liftit Cotizador SICETAC</h1>
+                        <p>Sistema de cotización de tarifas de transporte de carga</p>
+                    </div>
                 </div>
-                <div id="userInfo" style="text-align: right;">
-                    <span id="userEmail"></span>
-                    <button id="logoutBtn" class="btn btn-secondary" style="margin-left: 1rem;">Cerrar Sesión</button>
+                <div id="userInfo" class="user-info">
+                    <span id="userEmail" class="user-email"></span>
+                    <button id="logoutBtn" class="btn btn-secondary btn-logout">Cerrar Sesión</button>
                 </div>
             </div>
         </header>
 
         <main>
             <!-- Quote Form -->
-            <section class="quote-form-section">
+            <section class="quote-form-section card">
                 <h2>Nueva Cotización</h2>
                 <form id="quoteForm">
                     <div class="form-grid">
@@ -108,13 +112,13 @@
             </section>
 
             <!-- Results Section -->
-            <section id="resultsSection" class="results-section" style="display: none;">
+            <section id="resultsSection" class="results-section card" style="display: none;">
                 <h2>Resultados de Cotización</h2>
                 <div id="resultsContainer"></div>
             </section>
 
             <!-- History Section -->
-            <section class="history-section">
+            <section class="history-section card">
                 <h2>Historial de Cotizaciones</h2>
                 <div class="history-controls">
                     <button id="refreshHistory" class="btn btn-secondary">Actualizar</button>
