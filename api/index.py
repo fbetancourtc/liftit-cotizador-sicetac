@@ -12,29 +12,20 @@ class handler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
 
-        # Route handling
-        if self.path == '/api' or self.path == '/api/':
-            response = {
-                "message": "SICETAC API is running",
-                "status": "ok"
+        # Debug: Show what path we're receiving
+        import os
+
+        # Always return success with debug info
+        response = {
+            "status": "ok",
+            "message": "API is working",
+            "debug": {
+                "path": self.path,
+                "method": "GET",
+                "headers": dict(self.headers),
+                "env_base_path": os.environ.get('BASE_PATH', 'not set')
             }
-        elif self.path == '/api/health':
-            response = {
-                "status": "ok",
-                "message": "API is working",
-                "mode": "serverless"
-            }
-        elif self.path == '/api/config':
-            import os
-            response = {
-                "supabase_url": os.environ.get("SUPABASE_PROJECT_URL", ""),
-                "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", "")
-            }
-        else:
-            response = {
-                "error": "Not found",
-                "path": self.path
-            }
+        }
 
         # Write response
         self.wfile.write(json.dumps(response).encode())
