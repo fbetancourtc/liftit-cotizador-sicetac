@@ -1,46 +1,49 @@
 """
-Vercel serverless function handler - Minimal Debug Version
+Vercel Serverless Function - Fixed Handler
 """
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import os
+from http.server import BaseHTTPRequestHandler
+import json
 
-app = FastAPI(
-    title="SICETAC Debug",
-    root_path="/sicetac"
-)
+class handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        # Set response headers
+        self.send_response(200)
+        self.send_header('Content-type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.end_headers()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+        # Route handling
+        if self.path == '/api' or self.path == '/api/':
+            response = {
+                "message": "SICETAC API is running",
+                "status": "ok"
+            }
+        elif self.path == '/api/health':
+            response = {
+                "status": "ok",
+                "message": "API is working",
+                "mode": "serverless"
+            }
+        elif self.path == '/api/config':
+            import os
+            response = {
+                "supabase_url": os.environ.get("SUPABASE_PROJECT_URL", ""),
+                "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", "")
+            }
+        else:
+            response = {
+                "error": "Not found",
+                "path": self.path
+            }
 
-@app.get("/api/health")
-async def health_check():
-    return {
-        "status": "ok",
-        "message": "Minimal API is working",
-        "mode": "debug",
-        "root_path": app.root_path,
-        "env": {
-            "BASE_PATH": os.environ.get('BASE_PATH', 'not set'),
-            "SUPABASE_PROJECT_URL": "configured" if os.environ.get('SUPABASE_PROJECT_URL') else "missing"
-        }
-    }
+        # Write response
+        self.wfile.write(json.dumps(response).encode())
+        return
 
-@app.get("/api/config")
-async def get_config():
-    return {
-        "supabase_url": os.environ.get("SUPABASE_PROJECT_URL", ""),
-        "supabase_anon_key": os.environ.get("SUPABASE_ANON_KEY", "")
-    }
-
-@app.get("/")
-async def root():
-    return {"message": "SICETAC API", "status": "debug mode"}
-
-# Handler for Vercel
-handler = app
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+        return

@@ -31,8 +31,8 @@
   ],
   "functions": {
     "api/index.py": {
-      "maxDuration": 30,
-      "includeFiles": "app/**"
+      "runtime": "python3.9",
+      "maxDuration": 30
     }
   },
   "headers": [
