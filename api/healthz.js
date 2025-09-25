@@ -1,8 +1,18 @@
+function sendJson(res, statusCode, payload) {
+  if (typeof res.status === 'function') {
+    res.status(statusCode);
+  } else {
+    res.statusCode = statusCode;
+  }
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(payload));
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
-    res.status(405).json({ error: 'Method Not Allowed' });
+    sendJson(res, 405, { error: 'Method Not Allowed' });
     return;
   }
 
-  res.status(200).json({ status: 'ok' });
+  sendJson(res, 200, { status: 'ok' });
 };

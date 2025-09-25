@@ -3,6 +3,16 @@ const SICETAC_USERNAME = process.env.SICETAC_USERNAME || '';
 const SICETAC_PASSWORD = process.env.SICETAC_PASSWORD || '';
 const SICETAC_TIMEOUT_MS = (Number(process.env.SICETAC_TIMEOUT_SECONDS || '30') || 30) * 1000;
 
+function sendJson(res, statusCode, payload) {
+  if (typeof res.status === 'function') {
+    res.status(statusCode);
+  } else {
+    res.statusCode = statusCode;
+  }
+  res.setHeader('Content-Type', 'application/json');
+  res.end(JSON.stringify(payload));
+}
+
 const DEFAULT_VARIABLES = [
   'RUTA',
   'NOMBREUNIDADTRANSPORTE',
@@ -18,7 +28,9 @@ function toFloat(value) {
   if (value === undefined || value === null || value === '') {
     return null;
   }
-  const sanitized = String(value).replace(/[',]/g, '.');
+  const sanitized = String(value)
+    .replace(/'/g, '')
+    .replace(/,/g, '.');
   const parsed = Number(sanitized);
   return Number.isFinite(parsed) ? parsed : null;
 }
@@ -146,7 +158,7 @@ async function callSicetac(payload) {
 }
 
 function extractTagValue(fragment, tagName) {
-  const regex = new RegExp(`<${tagName}[^>]*>([\s\S]*?)<\\/${tagName}>`, 'i');
+  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)<\/${tagName}>`, 'i');
   const match = fragment.match(regex);
   if (!match) {
     return null;
@@ -169,18 +181,20 @@ function parseSicetacResponse(xml, request) {
     documents.push(docMatch[1]);
   }
 
-  if (documents.length === 0) {
+ if (documents.length === 0) {
     throw new Error('Sicetac response did not include any quotes');
   }
 
   const results = [];
   for (const fragment of documents) {
-    const mobilization = toFloat(extractTagValue(fragment, 'VALOR'));
+    const rawValor = extractTagValue(fragment, 'VALOR');
+    const mobilization = toFloat(rawValor);
     if (mobilization == null) {
       continue;
     }
 
-    const hourValue = toFloat(extractTagValue(fragment, 'VALORHORA'));
+    const rawHour = extractTagValue(fragment, 'VALORHORA');
+    const hourValue = toFloat(rawHour);
     const minimum = hourValue != null ? mobilization + hourValue * request.logistics_hours : mobilization;
 
     results.push({
@@ -211,12 +225,17 @@ function sanitizeCredentials() {
 
 module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') {
-    res.status(204).end();
+    if (typeof res.status === 'function') {
+      res.status(204).end();
+    } else {
+      res.statusCode = 204;
+      res.end();
+    }
     return;
   }
 
   if (req.method !== 'POST') {
-    res.status(405).json({ error: 'Method Not Allowed' });
+    sendJson(res, 405, { error: 'Method Not Allowed' });
     return;
   }
 
@@ -246,12 +265,9 @@ module.exports = async function handler(req, res) {
 
     const quotes = parseSicetacResponse(responseText, request);
 
-    res.status(200).json({
-      request,
-      quotes
-    });
+    sendJson(res, 200, { request, quotes });
   } catch (error) {
     console.error('[SICETAC] Request failed:', error);
-    res.status(502).json({ error: error.message || 'Failed to process Sicetac quote' });
+    sendJson(res, 502, { error: error.message || 'Failed to process Sicetac quote' });
   }
 };
