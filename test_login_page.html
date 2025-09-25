@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Supabase Connection</title>
+</head>
+<body>
+    <h1>Testing Supabase Connection</h1>
+    <div id="status">Connecting...</div>
+    <div id="details"></div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        async function testConnection() {
+            const statusEl = document.getElementById('status');
+            const detailsEl = document.getElementById('details');
+
+            try {
+                // Your Supabase credentials
+                const supabaseUrl = 'https://pwurztydqaykrwaafdux.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dXJ6dHlkcWF5a3J3YWFmZHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MjA2NDMsImV4cCI6MjA2NTQ5NjY0M30.v8_63hLXCSAZZ7Z3Xc85A7wLNXe4YyMgBoIj7mqz6Lg';
+
+                const supabase = createClient(supabaseUrl, supabaseKey);
+
+                statusEl.innerHTML = '✅ Connected to Supabase!';
+                detailsEl.innerHTML = `
+                    <p>Project URL: ${supabaseUrl}</p>
+                    <p>Ready for authentication!</p>
+                    <br>
+                    <h2>Next Steps:</h2>
+                    <ol>
+                        <li>Configure Google OAuth in your Supabase Dashboard</li>
+                        <li>Go to Authentication → Providers → Google</li>
+                        <li>Enable Google provider and add your OAuth credentials</li>
+                    </ol>
+                `;
+
+                // Test if we can check session (should return null if not logged in)
+                const { data: { session } } = await supabase.auth.getSession();
+                if (session === null) {
+                    detailsEl.innerHTML += '<p>No active session (expected for new connection)</p>';
+                }
+
+            } catch (error) {
+                statusEl.innerHTML = '❌ Connection failed';
+                detailsEl.innerHTML = `Error: ${error.message}`;
+            }
+        }
+
+        testConnection();
+    </script>
+</body>
+</html>

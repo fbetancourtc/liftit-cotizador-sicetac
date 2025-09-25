@@ -43,9 +43,12 @@ def create_app() -> FastAPI:
     @app.get("/api/config", tags=["ops"])
     async def get_config():
         # Return public configuration for the frontend
+        # Handle missing or default values gracefully
+        url = settings.supabase_project_url if settings.supabase_project_url != "https://your-project-ref.supabase.co" else ""
+        key = settings.supabase_anon_key if settings.supabase_anon_key else ""
         return {
-            "supabase_url": settings.supabase_project_url,
-            "supabase_anon_key": settings.supabase_anon_key
+            "supabase_url": url,
+            "supabase_anon_key": key
         }
 
     @app.get("/app", tags=["ops"])

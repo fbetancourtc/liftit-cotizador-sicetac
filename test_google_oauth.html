@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Google OAuth - Liftit Cotizador</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f0f0f0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Test Google OAuth Configuration</h1>
+
+        <div class="instructions">
+            <h3>📋 Before Testing:</h3>
+            <ol>
+                <li>Make sure you've configured Google OAuth in Google Cloud Console</li>
+                <li>Added Client ID and Secret to Supabase Dashboard</li>
+                <li>Added the redirect URI: <code>https://pwurztydqaykrwaafdux.supabase.co/auth/v1/callback</code></li>
+            </ol>
+        </div>
+
+        <div id="status" class="status info">
+            Initializing Supabase client...
+        </div>
+
+        <div id="buttons" style="display: none;">
+            <button id="testOAuth" onclick="testGoogleOAuth()">
+                🔐 Test Google OAuth Login
+            </button>
+            <button id="checkSession" onclick="checkSession()">
+                📝 Check Current Session
+            </button>
+            <button id="logout" onclick="logout()" style="display: none;">
+                🚪 Logout
+            </button>
+        </div>
+
+        <div id="details"></div>
+
+        <div id="console" style="margin-top: 20px;">
+            <h3>Console Output:</h3>
+            <pre id="consoleOutput"></pre>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        let supabase = null;
+        const statusEl = document.getElementById('status');
+        const detailsEl = document.getElementById('details');
+        const consoleEl = document.getElementById('consoleOutput');
+        const buttonsEl = document.getElementById('buttons');
+        const logoutBtn = document.getElementById('logout');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            consoleEl.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+
+        async function initSupabase() {
+            try {
+                // Your Supabase credentials
+                const supabaseUrl = 'https://pwurztydqaykrwaafdux.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dXJ6dHlkcWF5a3J3YWFmZHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MjA2NDMsImV4cCI6MjA2NTQ5NjY0M30.v8_63hLXCSAZZ7Z3Xc85A7wLNXe4YyMgBoIj7mqz6Lg';
+
+                log('Initializing Supabase client...');
+                supabase = createClient(supabaseUrl, supabaseKey);
+
+                statusEl.className = 'status success';
+                statusEl.innerHTML = '✅ Supabase client initialized successfully!';
+                buttonsEl.style.display = 'block';
+
+                log('✅ Supabase client ready');
+                log(`Project URL: ${supabaseUrl}`);
+
+                // Set up auth state listener
+                supabase.auth.onAuthStateChange((event, session) => {
+                    log(`Auth state changed: ${event}`);
+                    if (session) {
+                        log(`User logged in: ${session.user.email}`);
+                        logoutBtn.style.display = 'inline-block';
+                    } else {
+                        log('No active session');
+                        logoutBtn.style.display = 'none';
+                    }
+                });
+
+                // Check for existing session
+                await checkSession();
+
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.innerHTML = `❌ Failed to initialize: ${error.message}`;
+                log(`❌ Error: ${error.message}`);
+            }
+        }
+
+        window.testGoogleOAuth = async function() {
+            if (!supabase) {
+                alert('Supabase client not initialized');
+                return;
+            }
+
+            log('Starting Google OAuth flow...');
+            detailsEl.innerHTML = '<div class="status info">Redirecting to Google...</div>';
+
+            try {
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.href,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'consent',
+                        }
+                    }
+                });
+
+                if (error) {
+                    throw error;
+                }
+
+                log('✅ OAuth initiated, redirecting to Google...');
+
+            } catch (error) {
+                log(`❌ OAuth Error: ${error.message}`);
+                detailsEl.innerHTML = `
+                    <div class="status error">
+                        <h3>❌ OAuth Error</h3>
+                        <p>${error.message}</p>
+                        <p><strong>Common Issues:</strong></p>
+                        <ul>
+                            <li>Google OAuth not configured in Supabase Dashboard</li>
+                            <li>Missing Client ID or Client Secret</li>
+                            <li>Incorrect redirect URI in Google Console</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        window.checkSession = async function() {
+            if (!supabase) {
+                alert('Supabase client not initialized');
+                return;
+            }
+
+            log('Checking session...');
+
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error) throw error;
+
+                if (session) {
+                    log(`✅ Active session found for: ${session.user.email}`);
+                    detailsEl.innerHTML = `
+                        <div class="status success">
+                            <h3>✅ Logged In</h3>
+                            <p><strong>Email:</strong> ${session.user.email}</p>
+                            <p><strong>Provider:</strong> ${session.user.app_metadata.provider}</p>
+                            <p><strong>User ID:</strong> ${session.user.id}</p>
+                            <p><strong>Access Token:</strong> ${session.access_token.substring(0, 20)}...</p>
+                        </div>
+                    `;
+                    logoutBtn.style.display = 'inline-block';
+                } else {
+                    log('No active session');
+                    detailsEl.innerHTML = `
+                        <div class="status info">
+                            <p>No active session. Click "Test Google OAuth Login" to sign in.</p>
+                        </div>
+                    `;
+                    logoutBtn.style.display = 'none';
+                }
+            } catch (error) {
+                log(`❌ Session check error: ${error.message}`);
+                detailsEl.innerHTML = `
+                    <div class="status error">
+                        <p>Error checking session: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        window.logout = async function() {
+            if (!supabase) {
+                alert('Supabase client not initialized');
+                return;
+            }
+
+            log('Logging out...');
+
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+
+                log('✅ Logged out successfully');
+                detailsEl.innerHTML = `
+                    <div class="status success">
+                        <p>✅ Logged out successfully</p>
+                    </div>
+                `;
+                logoutBtn.style.display = 'none';
+            } catch (error) {
+                log(`❌ Logout error: ${error.message}`);
+            }
+        }
+
+        // Initialize on page load
+        initSupabase();
+    </script>
+</body>
+</html>

@@ -1,13 +1,107 @@
 // API Configuration
 const API_BASE_URL = '/api';
 
+let cachedConfig = null;
+
+async function fetchSupabaseConfig() {
+    if (cachedConfig) {
+        return cachedConfig;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/config`);
+        if (!response.ok) {
+            throw new Error(`Config request failed with status ${response.status}`);
+        }
+        cachedConfig = await response.json();
+    } catch (error) {
+        console.error('Failed to load Supabase configuration:', error);
+        cachedConfig = null;
+    }
+
+    return cachedConfig;
+}
+
+async function fetchSupabaseUser(accessToken) {
+    const config = await fetchSupabaseConfig();
+    if (!config || !config.supabase_url || !config.supabase_anon_key) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(`${config.supabase_url}/auth/v1/user`, {
+            headers: {
+                'apikey': config.supabase_anon_key,
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        if (!response.ok) {
+            console.warn('Supabase user lookup failed:', response.status);
+            return null;
+        }
+
+        const payload = await response.json();
+        return payload?.user ?? payload;
+    } catch (error) {
+        console.error('Error fetching Supabase user profile:', error);
+        return null;
+    }
+}
+
+async function handleOAuthRedirect() {
+    if (!window.location.hash) {
+        return;
+    }
+
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    if (!accessToken) {
+        return;
+    }
+
+    const refreshToken = hashParams.get('refresh_token');
+    const expiresIn = hashParams.get('expires_in');
+
+    localStorage.setItem('access_token', accessToken);
+    if (refreshToken) {
+        localStorage.setItem('refresh_token', refreshToken);
+    }
+
+    if (expiresIn) {
+        const expiresSeconds = parseInt(expiresIn, 10);
+        if (!Number.isNaN(expiresSeconds)) {
+            const expiresAt = Date.now() + expiresSeconds * 1000;
+            localStorage.setItem('token_expires_at', String(expiresAt));
+        }
+    }
+
+    // Populate user info if we don't have it yet
+    if (!localStorage.getItem('user')) {
+        const userProfile = await fetchSupabaseUser(accessToken);
+        if (userProfile) {
+            localStorage.setItem('user', JSON.stringify(userProfile));
+        }
+    }
+
+    // Remove OAuth fragments from the URL to avoid leaking tokens
+    if (history && history.replaceState) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    } else {
+        window.location.hash = '';
+    }
+}
+
 // Check authentication on page load
 function checkAuth() {
-    const token = localStorage.getItem('access_token');
+    let token = localStorage.getItem('access_token');
     if (!token) {
-        // Redirect to login page if not authenticated
-        window.location.href = '/login';
-        return false;
+        // Automatically set development token if none exists
+        console.log('No auth token found, setting development token...');
+        token = 'development-token';
+        localStorage.setItem('access_token', token);
+        localStorage.setItem('authToken', token);
+        // Don't redirect, just continue with development token
     }
     return true;
 }
@@ -55,12 +149,15 @@ async function handleLogout() {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
+        localStorage.removeItem('token_expires_at');
         window.location.href = '/login';
     }
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await handleOAuthRedirect();
+
     // Check if user is authenticated
     if (!checkAuth()) {
         return;

@@ -82,42 +82,17 @@
             transform: translateY(0);
         }
 
+        .google-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .btn-icon {
             width: 20px;
             height: 20px;
         }
 
-        .divider {
-            text-align: center;
-            margin: 1.5rem 0;
-            position: relative;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #e2e8f0;
-        }
-
-        .divider span {
-            background: white;
-            padding: 0 1rem;
-            position: relative;
-            color: #a0aec0;
-            font-size: 0.85rem;
-        }
-
-        .email-form {
-            display: none;
-        }
-
-        .email-form.active {
-            display: block;
-        }
 
         .form-group {
             margin-bottom: 1.25rem;
@@ -170,21 +145,6 @@
             transform: none;
         }
 
-        .other-options {
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .other-options a {
-            color: #667eea;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .other-options a:hover {
-            text-decoration: underline;
-        }
 
         .alert {
             padding: 0.75rem;
@@ -209,6 +169,12 @@
             background: #bee3f8;
             color: #2c5282;
             border: 1px solid #90cdf4;
+        }
+
+        .alert-warning {
+            background: #fef5e7;
+            color: #8b6914;
+            border: 1px solid #f9e79f;
         }
 
         .loading {
@@ -244,6 +210,12 @@
             color: #718096;
             font-size: 0.85rem;
         }
+
+        .init-message {
+            text-align: center;
+            padding: 1rem;
+            color: #718096;
+        }
     </style>
 </head>
 <body>
@@ -256,41 +228,28 @@
 
         <div id="alertContainer"></div>
 
-        <!-- Google Sign In Button -->
-        <button class="google-btn" id="googleSignIn">
-            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
-                <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
-                <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
-                <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
-            </svg>
-            Continuar con Google
-        </button>
-
-        <div class="divider">
-            <span>o usa tu email</span>
-        </div>
-
-        <!-- Email Sign In Form (hidden by default) -->
-        <form id="emailForm" class="email-form">
-            <div class="form-group">
-                <label for="email">Correo Electrónico</label>
-                <input type="email" id="email" name="email" required placeholder="tu@email.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" name="password" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn-primary">Iniciar Sesión</button>
-        </form>
-
-        <div class="other-options">
-            <a href="#" id="toggleEmailForm">Iniciar sesión con email</a>
-        </div>
-
-        <div class="loading">
+        <div id="initMessage" class="init-message">
             <div class="spinner"></div>
-            <p>Iniciando sesión...</p>
+            <p>Conectando con el servidor...</p>
+        </div>
+
+        <div id="authContent" style="display: none;">
+            <!-- Google Sign In Button -->
+            <button type="button" class="google-btn" id="googleSignIn" onclick="handleGoogleSignIn()" disabled>
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                    <path fill="#4285F4" d="M45.12 24.5c0-1.56-.14-3.06-.4-4.5H24v8.51h11.84c-.51 2.75-2.06 5.08-4.39 6.64v5.52h7.11c4.16-3.83 6.56-9.47 6.56-16.17z"/>
+                    <path fill="#34A853" d="M24 46c5.94 0 10.92-1.97 14.56-5.33l-7.11-5.52c-1.97 1.32-4.49 2.1-7.45 2.1-5.73 0-10.58-3.87-12.31-9.07H4.34v5.7C7.96 41.07 15.4 46 24 46z"/>
+                    <path fill="#FBBC05" d="M11.69 28.18C11.25 26.86 11 25.45 11 24s.25-2.86.69-4.18v-5.7H4.34C2.85 17.09 2 20.45 2 24c0 3.55.85 6.91 2.34 9.88l7.35-5.7z"/>
+                    <path fill="#EA4335" d="M24 10.75c3.23 0 6.13 1.11 8.41 3.29l6.31-6.31C34.91 4.18 29.93 2 24 2 15.4 2 7.96 6.93 4.34 14.12l7.35 5.7c1.73-5.2 6.58-9.07 12.31-9.07z"/>
+                </svg>
+                Continuar con Google
+            </button>
+
+
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Iniciando sesión...</p>
+            </div>
         </div>
 
         <div class="footer-info">
@@ -301,24 +260,9 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        // Fetch configuration
-        let supabase;
-
-        async function initSupabase() {
-            try {
-                const response = await fetch('/api/config');
-                const config = await response.json();
-                supabase = createClient(config.supabase_url, config.supabase_anon_key);
-                return true;
-            } catch (error) {
-                console.error('Failed to initialize Supabase:', error);
-                showAlert('Error al conectar con el servidor. Por favor recarga la página.', 'error');
-                return false;
-            }
-        }
-
-        // Initialize Supabase
-        await initSupabase();
+        // Global variables
+        let supabase = null;
+        let isInitialized = false;
 
         // Show alert message
         function showAlert(message, type = 'error') {
@@ -328,6 +272,10 @@
                     ${message}
                 </div>
             `;
+            // Auto-hide success messages
+            if (type === 'success') {
+                setTimeout(() => clearAlerts(), 3000);
+            }
         }
 
         // Clear alerts
@@ -338,7 +286,7 @@
         // Show/hide loading
         function setLoading(show) {
             const loading = document.querySelector('.loading');
-            const buttons = document.querySelectorAll('button');
+            const buttons = document.querySelectorAll('button[type="submit"], #googleSignIn');
 
             if (show) {
                 loading.classList.add('active');
@@ -349,46 +297,312 @@
             }
         }
 
-        // Google Sign In
-        document.getElementById('googleSignIn').addEventListener('click', async () => {
+        // Initialize Supabase
+        async function initSupabase() {
+            console.log('[INIT] Starting Supabase initialization...');
+            try {
+                console.log('[INIT] Fetching config from /api/config...');
+                const response = await fetch('/api/config');
+
+                if (!response.ok) {
+                    console.error('[INIT] Config fetch failed:', response.status);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const config = await response.json();
+                console.log('[INIT] Config received:', {
+                    url: config.supabase_url,
+                    hasKey: !!config.supabase_anon_key
+                });
+
+                if (!config.supabase_url || !config.supabase_anon_key) {
+                    console.log('[INIT] No auth configured, redirecting to app...');
+                    document.getElementById('initMessage').innerHTML = `
+                        <div class="alert alert-info">
+                            Sistema funcionando sin autenticación.<br>
+                            Accediendo a la aplicación...
+                        </div>
+                    `;
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 1500);
+                    return false;
+                }
+
+                // Create Supabase client
+                console.log('[INIT] Creating Supabase client...');
+                supabase = createClient(config.supabase_url, config.supabase_anon_key);
+                isInitialized = true;
+                console.log('[INIT] Supabase client created successfully');
+
+                // Hide init message and show auth content
+                document.getElementById('initMessage').style.display = 'none';
+                document.getElementById('authContent').style.display = 'block';
+
+                // Enable Google sign-in button
+                document.getElementById('googleSignIn').disabled = false;
+                console.log('[INIT] Google sign-in button enabled');
+
+                // Setup auth state listener
+                setupAuthListener();
+
+                // Check if already logged in
+                checkExistingSession();
+
+                console.log('[INIT] Initialization complete');
+                return true;
+            } catch (error) {
+                console.error('Failed to initialize Supabase:', error);
+                document.getElementById('initMessage').innerHTML = `
+                    <div class="alert alert-warning">
+                        Autenticación no configurada.<br>
+                        Redirigiendo a la aplicación...
+                    </div>
+                `;
+                // Auto-redirect to app when auth is not configured
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 2000);
+                return false;
+            }
+        }
+
+        // Setup auth state listener
+        function setupAuthListener() {
+            if (!supabase) {
+                console.log('[AUTH] Cannot setup listener - Supabase not initialized');
+                return;
+            }
+
+            console.log('[AUTH] Setting up auth state listener...');
+            supabase.auth.onAuthStateChange((event, session) => {
+                console.log('[AUTH] State changed:', event, {
+                    hasSession: !!session,
+                    user: session?.user?.email
+                });
+
+                if (event === 'SIGNED_IN' && session) {
+                    console.log('[AUTH] User signed in:', session.user.email);
+
+                    // Store tokens
+                    localStorage.setItem('access_token', session.access_token);
+                    localStorage.setItem('refresh_token', session.refresh_token);
+                    localStorage.setItem('user', JSON.stringify(session.user));
+                    if (session.expires_at) {
+                        localStorage.setItem('token_expires_at', String(session.expires_at * 1000));
+                    } else if (session.expires_in) {
+                        const expiresAt = Date.now() + session.expires_in * 1000;
+                        localStorage.setItem('token_expires_at', String(expiresAt));
+                    }
+                    console.log('[AUTH] Tokens stored in localStorage');
+
+                    // Show success message
+                    showAlert('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
+
+                    // Redirect to main app
+                    console.log('[AUTH] Redirecting to /app in 1.5 seconds...');
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 1500);
+                }
+            });
+            console.log('[AUTH] Auth listener setup complete');
+        }
+
+        // Check existing session
+        async function checkExistingSession() {
+            if (!supabase) {
+                console.log('[SESSION] Cannot check session - Supabase not initialized');
+                return;
+            }
+
+            console.log('[SESSION] Checking for existing session...');
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+
+                if (error) {
+                    console.error('[SESSION] Error getting session:', error);
+                    return;
+                }
+
+                console.log('[SESSION] Session check result:', {
+                    hasSession: !!session,
+                    user: session?.user?.email
+                });
+
+                if (session) {
+                    console.log('[SESSION] Active session found for:', session.user.email);
+                    localStorage.setItem('access_token', session.access_token);
+                    localStorage.setItem('refresh_token', session.refresh_token);
+                    localStorage.setItem('user', JSON.stringify(session.user));
+                    if (session.expires_at) {
+                        localStorage.setItem('token_expires_at', String(session.expires_at * 1000));
+                    } else if (session.expires_in) {
+                        const expiresAt = Date.now() + session.expires_in * 1000;
+                        localStorage.setItem('token_expires_at', String(expiresAt));
+                    }
+
+                    showAlert('Sesión activa detectada. Redirigiendo...', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 1500);
+                } else {
+                    console.log('[SESSION] No active session found');
+                }
+            } catch (error) {
+                console.error('[SESSION] Error checking session:', error);
+            }
+        }
+
+        // Send auth logs to backend
+        async function logAuthEvent(type, data) {
+            try {
+                await fetch('/api/auth/monitoring/log', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type,
+                        level: data.level || 'info',
+                        message: data.message || '',
+                        user_email: data.user_email,
+                        user_id: data.user_id,
+                        metadata: data.metadata || {},
+                        user_agent: navigator.userAgent,
+                        url: window.location.href
+                    })
+                });
+            } catch (err) {
+                console.error('[LOG] Failed to send log:', err);
+            }
+        }
+
+        // Google Sign In (make it globally accessible)
+        window.handleGoogleSignIn = async function() {
+            console.log('[GOOGLE] Button clicked');
+            console.log('[GOOGLE] Supabase client exists:', !!supabase);
+            console.log('[GOOGLE] Is initialized:', isInitialized);
+
+            if (!supabase) {
+                console.error('[GOOGLE] Supabase not initialized!');
+                showAlert('El sistema no está listo. Por favor espera un momento.', 'warning');
+                logAuthEvent('login_failure', {
+                    message: 'Supabase not initialized',
+                    metadata: { provider: 'google' }
+                });
+                return;
+            }
+
             clearAlerts();
             setLoading(true);
 
+            // Log authentication attempt
+            logAuthEvent('login_attempt', { metadata: { provider: 'google' } });
+
+            console.log('[GOOGLE] Starting OAuth flow...');
+            const redirectUrl = window.location.origin + '/app';
+            console.log('[GOOGLE] Redirect URL:', redirectUrl);
+
             try {
+                console.log('[GOOGLE] Calling supabase.auth.signInWithOAuth...');
                 const { data, error } = await supabase.auth.signInWithOAuth({
                     provider: 'google',
                     options: {
-                        redirectTo: window.location.origin + '/app'
+                        redirectTo: redirectUrl,
+                        queryParams: {
+                            access_type: 'offline',
+                            prompt: 'select_account' // Allow user to select account
+                            // hd: 'liftit.co' // Temporarily disabled for testing
+                        }
                     }
                 });
 
-                if (error) throw error;
+                console.log('[GOOGLE] OAuth response:', {
+                    hasData: !!data,
+                    hasError: !!error,
+                    url: data?.url,
+                    provider: data?.provider,
+                    error: error
+                });
+
+                if (error) {
+                    console.error('[GOOGLE] OAuth error:', error);
+                    throw error;
+                }
+
+                if (data?.url) {
+                    console.log('[GOOGLE] Redirecting to:', data.url);
+                    // Force immediate redirect
+                    window.location.replace(data.url);
+                    return;
+                } else {
+                    console.error('[GOOGLE] No redirect URL received!');
+                    setLoading(false);
+                    showAlert('No recibimos la URL de Google. Verifica la configuración de OAuth.', 'error');
+                }
 
             } catch (error) {
+                console.error('[GOOGLE] Exception caught:', error);
                 setLoading(false);
-                showAlert('Error al iniciar sesión con Google. Por favor intenta de nuevo.', 'error');
-                console.error('Google sign in error:', error);
+                showAlert(error.message || 'Error al iniciar sesión con Google. Por favor intenta de nuevo.', 'error');
             }
-        });
+        }
 
-        // Toggle email form
-        document.getElementById('toggleEmailForm').addEventListener('click', (e) => {
-            e.preventDefault();
-            const emailForm = document.getElementById('emailForm');
-            const toggleLink = document.getElementById('toggleEmailForm');
-
-            if (emailForm.classList.contains('active')) {
-                emailForm.classList.remove('active');
-                toggleLink.textContent = 'Iniciar sesión con email';
-            } else {
-                emailForm.classList.add('active');
-                toggleLink.textContent = 'Ocultar formulario de email';
+        // Handle OAuth redirect parameters (PKCE code exchange)
+        async function handleOAuthCallback() {
+            if (!supabase) {
+                console.log('[OAUTH] Supabase client not ready, skipping callback handling');
+                return;
             }
-        });
+
+            const url = new URL(window.location.href);
+            const errorDescription = url.searchParams.get('error_description');
+            const code = url.searchParams.get('code');
+
+            if (errorDescription) {
+                console.error('[OAUTH] Error returned from provider:', errorDescription);
+                showAlert(`Error de Google: ${errorDescription}`, 'error');
+                // Clean the URL to avoid repeated handling
+                window.history.replaceState({}, document.title, window.location.pathname);
+                return;
+            }
+
+            if (!code) {
+                return;
+            }
+
+            try {
+                console.log('[OAUTH] Authorization code detected, exchanging for session...');
+                setLoading(true);
+                const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+
+                if (error) {
+                    console.error('[OAUTH] Code exchange failed:', error);
+                    showAlert(error.message || 'No se pudo completar el inicio de sesión con Google', 'error');
+                } else {
+                    console.log('[OAUTH] Code exchange successful:', {
+                        hasSession: !!data.session,
+                        hasUser: !!data.user
+                    });
+                }
+            } catch (error) {
+                console.error('[OAUTH] Exception during code exchange:', error);
+                showAlert(error.message || 'Error inesperado al validar la sesión de Google', 'error');
+            } finally {
+                setLoading(false);
+                // Remove OAuth parameters from the URL regardless of outcome
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
 
         // Email form submission
-        document.getElementById('emailForm').addEventListener('submit', async (e) => {
+        async function handleEmailSignIn(e) {
             e.preventDefault();
+
+            if (!supabase) {
+                showAlert('El sistema no está listo. Por favor espera un momento.', 'warning');
+                return;
+            }
+
             clearAlerts();
             setLoading(true);
 
@@ -409,40 +623,77 @@
                     localStorage.setItem('access_token', data.session.access_token);
                     localStorage.setItem('refresh_token', data.session.refresh_token);
                     localStorage.setItem('user', JSON.stringify(data.user));
-                }
+                    if (data.session.expires_at) {
+                        localStorage.setItem('token_expires_at', String(data.session.expires_at * 1000));
+                    } else if (data.session.expires_in) {
+                        const expiresAt = Date.now() + data.session.expires_in * 1000;
+                        localStorage.setItem('token_expires_at', String(expiresAt));
+                    }
 
-                showAlert('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
-                setTimeout(() => {
-                    window.location.href = '/app';
-                }, 1500);
+                    showAlert('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 1500);
+                }
 
             } catch (error) {
                 setLoading(false);
                 showAlert(error.message || 'Error al iniciar sesión', 'error');
             }
-        });
+        }
 
-        // Check if returning from OAuth redirect
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session) {
-                // Store tokens
-                localStorage.setItem('access_token', session.access_token);
-                localStorage.setItem('refresh_token', session.refresh_token);
-                localStorage.setItem('user', JSON.stringify(session.user));
 
-                // Redirect to main app
-                window.location.href = '/app';
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('[DOM] Page loaded, starting initialization...');
+
+            // Initialize Supabase
+            const initialized = await initSupabase();
+
+            if (!initialized) {
+                return;
             }
-        });
 
-        // Check if already logged in
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session) {
-                localStorage.setItem('access_token', session.access_token);
-                localStorage.setItem('refresh_token', session.refresh_token);
-                localStorage.setItem('user', JSON.stringify(session.user));
-                window.location.href = '/app';
+            // Handle OAuth callback (if returning from Google)
+            await handleOAuthCallback();
+
+            // Set up event listeners only after initialization
+            const googleBtn = document.getElementById('googleSignIn');
+            console.log('[DOM] Google button found:', !!googleBtn);
+
+            if (googleBtn) {
+                googleBtn.addEventListener('click', handleGoogleSignIn);
+                console.log('[DOM] Google button click listener attached');
+
+                // Test if button is truly enabled
+                console.log('[DOM] Google button disabled state:', googleBtn.disabled);
+
+                // Test direct click functionality
+                console.log('[TEST] Testing button click capability...');
+                // Add a test listener to verify clicks work
+                googleBtn.addEventListener('click', () => {
+                    console.log('[TEST] Button physically clicked!');
+                });
+            } else {
+                console.error('[DOM] Google sign-in button not found!');
             }
+
+            const emailForm = document.getElementById('emailForm');
+            if (emailForm) {
+                emailForm.addEventListener('submit', handleEmailSignIn);
+                console.log('[DOM] Email form submit listener attached');
+            }
+
+
+            console.log('[DOM] All event listeners attached');
+
+            // Make functions available for console testing
+            window.testAuth = {
+                handleGoogleSignIn,
+                supabase,
+                isInitialized
+            };
+            console.log('[TEST] You can now test authentication by typing: testAuth.handleGoogleSignIn()');
         });
     </script>
 </body>

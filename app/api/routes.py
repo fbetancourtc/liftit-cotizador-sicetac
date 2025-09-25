@@ -7,6 +7,7 @@ from app.models.quotes import QuoteRequest, QuoteResponse
 from app.services.sicetac import SicetacClient
 from app.api import quotes_crud
 from app.api import auth_routes
+from app.api import auth_monitoring
 
 # Use development auth if environment is local
 if os.getenv('ENVIRONMENT', 'local') == 'local':
@@ -42,3 +43,6 @@ router.include_router(quotes_crud.router)
 
 # Include auth routes (these don't require authentication)
 router.include_router(auth_routes.router)
+
+# Include auth monitoring routes
+router.include_router(auth_monitoring.router)
