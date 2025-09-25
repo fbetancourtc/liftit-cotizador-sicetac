@@ -15,16 +15,15 @@ echo "http://rndcws.mintransporte.gov.co:8080/ws/rndcService" | vercel env add S
 echo "30" | vercel env add SICETAC_TIMEOUT_SECONDS production --force
 echo "true" | vercel env add SICETAC_VERIFY_SSL production --force
 
-# Supabase configuration (referencing existing variables)
 echo "authenticated" | vercel env add SUPABASE_JWT_AUDIENCE production --force
 echo "production" | vercel env add ENVIRONMENT production --force
 
-# Use existing Supabase variables with correct names
+# Set Supabase project variables explicitly to avoid legacy values
 vercel env rm SUPABASE_PROJECT_URL production 2>/dev/null
-vercel env add SUPABASE_PROJECT_URL production --force < <(vercel env get SUPABASE_URL production)
+echo "https://pwurztydqaykrwaafdux.supabase.co" | vercel env add SUPABASE_PROJECT_URL production --force
 
 vercel env rm SUPABASE_ANON_KEY production 2>/dev/null
-vercel env add SUPABASE_ANON_KEY production --force < <(vercel env get Supabase_Anon_Key production)
+echo "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3dXJ6dHlkcWF5a3J3YWFmZHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5MjA2NDMsImV4cCI6MjA2NTQ5NjY0M30.v8_63hLXCSAZZ7Z3Xc85A7wLNXe4YyMgBoIj7mqz6Lg" | vercel env add SUPABASE_ANON_KEY production --force
 
 echo ""
 echo "✅ Environment variables configured!"

@@ -1,10 +1,31 @@
+import os
 from functools import lru_cache
-from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def _sanitize_environment() -> None:
+    for key, value in list(os.environ.items()):
+        if isinstance(value, str):
+            cleaned = value.strip()
+            if cleaned.endswith("\\n"):
+                cleaned = cleaned[: -2]
+            if cleaned.endswith("\\r"):
+                cleaned = cleaned[: -2]
+            os.environ[key] = cleaned
+
+
+_sanitize_environment()
 
 
 class Settings(BaseSettings):
     """Central application configuration sourced from environment variables."""
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        str_strip_whitespace=True,
+    )
 
     app_name: str = Field(default="Liftit Cotizador SICETAC")
     environment: str = Field(default="local")
@@ -44,6 +65,25 @@ class Settings(BaseSettings):
     )
     sicetac_verify_ssl: bool = Field(default=False, validation_alias="SICETAC_VERIFY_SSL")
 
+    @field_validator("sicetac_verify_ssl", mode="before")
+    @classmethod
+    def _normalize_boolean(cls, value: object) -> bool | object:
+        if isinstance(value, str):
+            cleaned = value.strip().lower()
+            if cleaned in {"true", "1", "yes", "on"}:
+                return True
+            if cleaned in {"false", "0", "no", "off"}:
+                return False
+        return value
+
+    @field_validator("sicetac_timeout_seconds", mode="before")
+    @classmethod
+    def _normalize_timeout(cls, value: object) -> object:
+        if isinstance(value, str):
+            return value.strip()
+        return value
+
+
     # Database configuration
     database_url: str = Field(
         default="sqlite:///./quotations.db",
@@ -56,10 +96,6 @@ class Settings(BaseSettings):
         validation_alias="REQUEST_LOG_SAMPLES",
         description="Limits structured logging of upstream SOAP requests to avoid leaking credentials.",
     )
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
 
     @property
     def jwks_url(self) -> str:

@@ -9,8 +9,12 @@
       "destination": "/app/static/login.html"
     },
     {
-      "source": "/sicetac/api/(.*)",
+      "source": "/sicetac/api",
       "destination": "/api"
+    },
+    {
+      "source": "/sicetac/api/(.*)",
+      "destination": "/api/$1"
     },
     {
       "source": "/sicetac/static/(.*)",
@@ -29,11 +33,6 @@
       "destination": "/app/static/login.html"
     }
   ],
-  "functions": {
-    "api/*.py": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/sicetac/(.*)",

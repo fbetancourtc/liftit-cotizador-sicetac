@@ -1,0 +1,48 @@
+SICETAC PRODUCTION VALIDATION REPORT
+Generated: 2025-09-25 00:39:57.816972
+============================================================
+
+Total Tests: 22
+Passed: 12
+Failed: 9
+Warnings: 1
+Pass Rate: 54.5%
+
+ERRORS:
+  - DATABASE_URL is not set
+  - REDIS_URL is not set
+  - SICETAC_USERNAME is not set
+  - SICETAC_PASSWORD is not set
+  - SECRET_KEY is not set
+  - Connection failed: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sicetac_user" does not exist
+
+  - Status 404
+  - Status 422: {"detail":[{"type":"missing","loc":["query","request"],"msg":"Field required","input":null}]}
+  - Cities data not found
+
+WARNINGS:
+  - Only 0 cities found (expected 70+)
+
+DETAILED RESULTS:
+  [01] FAIL: DATABASE_URL is not set
+  [02] FAIL: REDIS_URL is not set
+  [03] FAIL: SICETAC_USERNAME is not set
+  [04] FAIL: SICETAC_PASSWORD is not set
+  [05] FAIL: SECRET_KEY is not set
+  [06] FAIL: Connection failed: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sicetac_user" does not exist
+
+  [07] PASS: Connected to Redis
+  [08] PASS: Cache read/write working
+  [09] PASS: Status 200
+  [10] PASS: Status 200
+  [11] PASS: Status 200
+  [12] FAIL: Status 404
+  [13] FAIL: Status 422: {"detail":[{"type":"missing","loc":["query","request"],"msg":"Field required","input":null}]}
+  [14] FAIL: Cities data not found
+  [16] PASS: CORS headers present
+  [17] PASS: Input validation working
+  [18] PASS: Average response: 6.02ms
+  [19] PASS: Backup script found
+  [20] PASS: Backup directory exists
+  [21] PASS: Log directory exists
+  [22] PASS: Health metrics available

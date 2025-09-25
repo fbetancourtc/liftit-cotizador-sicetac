@@ -1,0 +1,38 @@
+SICETAC PRODUCTION VALIDATION REPORT
+Generated: 2025-09-25 00:31:20.024808
+============================================================
+
+Total Tests: 25
+Passed: 24
+Failed: 0
+Warnings: 1
+Pass Rate: 96.0%
+
+WARNINGS:
+  - Only 2 indexes found (expected 5+)
+
+DETAILED RESULTS:
+  [01] PASS: DATABASE_URL is set
+  [02] PASS: REDIS_URL is set
+  [03] PASS: SICETAC_USERNAME is set
+  [04] PASS: SICETAC_PASSWORD is set
+  [05] PASS: SECRET_KEY is set
+  [06] PASS: Connected to PostgreSQL
+  [07] PASS: Table exists with 0 records
+  [08] PASS: Table exists with 0 records
+  [10] PASS: Connected to Redis
+  [11] PASS: Cache read/write working
+  [12] PASS: Status 200
+  [13] PASS: Status 200
+  [14] PASS: Status 200
+  [15] PASS: Status 200
+  [16] PASS: Received 2 quotes
+  [17] PASS: Cities data loaded
+  [18] PASS: Found 73 cities
+  [19] PASS: CORS headers present
+  [20] PASS: Input validation working
+  [21] PASS: Average response: 6.60ms
+  [22] PASS: Backup script found
+  [23] PASS: Backup directory exists
+  [24] PASS: Log directory exists
+  [25] PASS: Health metrics available

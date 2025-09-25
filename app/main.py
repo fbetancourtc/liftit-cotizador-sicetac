@@ -52,6 +52,7 @@ def create_app() -> FastAPI:
         # Handle missing or default values gracefully
         url = settings.supabase_project_url if settings.supabase_project_url != "https://your-project-ref.supabase.co" else ""
         key = settings.supabase_anon_key if settings.supabase_anon_key else ""
+
         return {
             "supabase_url": url,
             "supabase_anon_key": key

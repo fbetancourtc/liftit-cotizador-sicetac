@@ -1,0 +1,51 @@
+SICETAC PRODUCTION VALIDATION REPORT
+Generated: 2025-09-25 00:22:13.611424
+============================================================
+
+Total Tests: 21
+Passed: 9
+Failed: 11
+Warnings: 1
+Pass Rate: 42.9%
+
+ERRORS:
+  - Connection failed: connection to server at "localhost" (::1), port 5432 failed: Operation not permitted
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Operation not permitted
+	Is the server running on that host and accepting TCP/IP connections?
+
+  - Connection failed: Error 1 connecting to localhost:6379. Operation not permitted.
+  - Request failed: [Errno 1] Operation not permitted
+  - Request failed: [Errno 1] Operation not permitted
+  - Request failed: [Errno 1] Operation not permitted
+  - Request failed: [Errno 1] Operation not permitted
+  - Request failed: [Errno 1] Operation not permitted
+  - Request failed: [Errno 1] Operation not permitted
+  - Health check failed: [Errno 1] Operation not permitted
+
+WARNINGS:
+  - CORS test inconclusive: [Errno 1] Operation not permitted
+
+DETAILED RESULTS:
+  [01] PASS: DATABASE_URL is set
+  [02] PASS: REDIS_URL is set
+  [03] PASS: SICETAC_USERNAME is set
+  [04] PASS: SICETAC_PASSWORD is set
+  [05] PASS: SECRET_KEY is set
+  [06] FAIL: Connection failed: connection to server at "localhost" (::1), port 5432 failed: Operation not permitted
+	Is the server running on that host and accepting TCP/IP connections?
+connection to server at "localhost" (127.0.0.1), port 5432 failed: Operation not permitted
+	Is the server running on that host and accepting TCP/IP connections?
+
+  [07] FAIL: Connection failed: Error 1 connecting to localhost:6379. Operation not permitted.
+  [08] FAIL: Request failed: [Errno 1] Operation not permitted
+  [09] FAIL: Request failed: [Errno 1] Operation not permitted
+  [10] FAIL: Request failed: [Errno 1] Operation not permitted
+  [11] FAIL: Request failed: [Errno 1] Operation not permitted
+  [12] FAIL: Request failed: [Errno 1] Operation not permitted
+  [13] FAIL: Request failed: [Errno 1] Operation not permitted
+  [16] PASS: Request rejected as expected
+  [18] PASS: Backup script found
+  [19] PASS: Backup directory exists
+  [20] PASS: Log directory exists
+  [21] FAIL: Health check failed: [Errno 1] Operation not permitted

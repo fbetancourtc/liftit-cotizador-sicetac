@@ -1,0 +1,39 @@
+SICETAC PRODUCTION VALIDATION REPORT
+Generated: 2025-09-25 00:22:33.676342
+============================================================
+
+Total Tests: 22
+Passed: 20
+Failed: 2
+Warnings: 0
+Pass Rate: 90.9%
+
+ERRORS:
+  - Connection failed: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sicetac_user" does not exist
+
+  - Status 502: {"detail":"Failed to parse response from Sicetac"}
+
+DETAILED RESULTS:
+  [01] PASS: DATABASE_URL is set
+  [02] PASS: REDIS_URL is set
+  [03] PASS: SICETAC_USERNAME is set
+  [04] PASS: SICETAC_PASSWORD is set
+  [05] PASS: SECRET_KEY is set
+  [06] FAIL: Connection failed: connection to server at "localhost" (::1), port 5432 failed: FATAL:  role "sicetac_user" does not exist
+
+  [07] PASS: Connected to Redis
+  [08] PASS: Cache read/write working
+  [09] PASS: Status 200
+  [10] PASS: Status 200
+  [11] PASS: Status 200
+  [12] PASS: Status 200
+  [13] FAIL: Status 502: {"detail":"Failed to parse response from Sicetac"}
+  [14] PASS: Cities data loaded
+  [15] PASS: Found 73 cities
+  [16] PASS: CORS headers present
+  [17] PASS: Input validation working
+  [18] PASS: Average response: 6.71ms
+  [19] PASS: Backup script found
+  [20] PASS: Backup directory exists
+  [21] PASS: Log directory exists
+  [22] PASS: Health metrics available
