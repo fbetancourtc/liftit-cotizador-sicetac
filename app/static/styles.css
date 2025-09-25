@@ -5,6 +5,25 @@
     box-sizing: border-box;
 }
 
+/* Period Selector Styles */
+.period-selector {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.period-selector select {
+    flex: 1;
+}
+
+.period-display {
+    display: block;
+    margin-top: 0.25rem;
+    color: var(--liftit-primary);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
 /* Header Styles */
 .header-brand {
     display: flex;

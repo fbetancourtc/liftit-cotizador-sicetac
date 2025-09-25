@@ -2,21 +2,52 @@
 // Use configuration from config.js if available
 const API_BASE_URL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : '/sicetac/api';
 
+// Debug logging function
+function debugLog(message, data = null) {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] ${message}`);
+    if (data) {
+        console.log('  Data:', data);
+    }
+}
+
+debugLog('='.repeat(80));
+debugLog('SICETAC Application Starting');
+debugLog(`API Base URL: ${API_BASE_URL}`);
+debugLog('Window location:', {
+    href: window.location.href,
+    pathname: window.location.pathname,
+    hash: window.location.hash
+});
+debugLog('='.repeat(80));
+
 let cachedConfig = null;
 
 async function fetchSupabaseConfig() {
     if (cachedConfig) {
+        debugLog('Returning cached Supabase config');
         return cachedConfig;
     }
 
+    debugLog('Fetching Supabase config from API...');
     try {
-        const response = await fetch(`${API_BASE_URL}/config`);
+        const configUrl = `${API_BASE_URL}/config`;
+        debugLog(`Config URL: ${configUrl}`);
+
+        const response = await fetch(configUrl);
+        debugLog(`Config response status: ${response.status}`);
+
         if (!response.ok) {
             throw new Error(`Config request failed with status ${response.status}`);
         }
         cachedConfig = await response.json();
+        debugLog('Supabase config received:', {
+            has_url: !!cachedConfig.supabase_url,
+            has_key: !!cachedConfig.supabase_anon_key
+        });
     } catch (error) {
         console.error('Failed to load Supabase configuration:', error);
+        debugLog('Config fetch failed:', error.message);
         cachedConfig = null;
     }
 
@@ -95,14 +126,19 @@ async function handleOAuthRedirect() {
 
 // Check authentication on page load
 function checkAuth() {
+    debugLog('Checking authentication...');
     let token = localStorage.getItem('access_token');
+
     if (!token) {
         // Automatically set development token if none exists
-        console.log('No auth token found, setting development token...');
+        debugLog('No auth token found, setting development token...');
         token = 'development-token';
         localStorage.setItem('access_token', token);
         localStorage.setItem('authToken', token);
+        debugLog('Development token set');
         // Don't redirect, just continue with development token
+    } else {
+        debugLog(`Auth token found: ${token.substring(0, 20)}...`);
     }
     return true;
 }
@@ -110,10 +146,15 @@ function checkAuth() {
 // Get current auth token
 function getAuthHeaders() {
     const token = localStorage.getItem('access_token');
-    return {
+    const headers = {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : ''
     };
+    debugLog('Auth headers prepared', {
+        has_token: !!token,
+        auth_header: headers.Authorization ? 'Bearer ...' : 'none'
+    });
+    return headers;
 }
 
 // DOM Elements
@@ -155,9 +196,65 @@ async function handleLogout() {
     }
 }
 
+// Period selector functionality
+function initializePeriodSelector() {
+    const monthSelect = document.getElementById('periodMonth');
+    const yearSelect = document.getElementById('periodYear');
+    const periodInput = document.getElementById('period');
+    const periodDisplay = document.getElementById('periodDisplay');
+
+    if (!monthSelect || !yearSelect || !periodInput) {
+        return;
+    }
+
+    // Populate year dropdown (from 2020 to next year)
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+
+    for (let year = 2020; year <= currentYear + 1; year++) {
+        const option = document.createElement('option');
+        option.value = year.toString();
+        option.textContent = year;
+        yearSelect.appendChild(option);
+    }
+
+    // Set current month and year as default
+    monthSelect.value = currentMonth.toString().padStart(2, '0');
+    yearSelect.value = currentYear.toString();
+
+    // Update the hidden period input and display
+    function updatePeriod() {
+        const month = monthSelect.value;
+        const year = yearSelect.value;
+
+        if (month && year) {
+            const periodValue = `${year}${month}`;
+            periodInput.value = periodValue;
+
+            // Update display text
+            const monthName = monthSelect.options[monthSelect.selectedIndex].text;
+            periodDisplay.textContent = `Período seleccionado: ${monthName} ${year} (${periodValue})`;
+        } else {
+            periodInput.value = '';
+            periodDisplay.textContent = '';
+        }
+    }
+
+    // Add event listeners
+    monthSelect.addEventListener('change', updatePeriod);
+    yearSelect.addEventListener('change', updatePeriod);
+
+    // Initialize with current values
+    updatePeriod();
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     await handleOAuthRedirect();
+
+    // Initialize period selector
+    initializePeriodSelector();
 
     // Update footer year automatically
     const yearElement = document.getElementById('currentYear');
@@ -225,12 +322,24 @@ function handleSkipAuth() {
 // Handle quote form submission
 async function handleQuoteSubmit(e) {
     e.preventDefault();
+    debugLog('=' * 60);
+    debugLog('QUOTE SUBMISSION STARTED');
 
     // Validate city selections
     const originCode = document.getElementById('origin').value;
     const destinationCode = document.getElementById('destination').value;
+    const originCity = document.getElementById('originCity').value;
+    const destinationCity = document.getElementById('destinationCity').value;
+
+    debugLog('City selections:', {
+        originCode,
+        originCity,
+        destinationCode,
+        destinationCity
+    });
 
     if (!originCode || !destinationCode) {
+        debugLog('ERROR: Missing city codes');
         showMessage('Por favor seleccione ciudades válidas de origen y destino', 'error');
         return;
     }
@@ -246,15 +355,21 @@ async function handleQuoteSubmit(e) {
         logistics_hours: parseFloat(formData.get('logistics_hours')) || 0
     };
 
+    debugLog('Quote request data:', quoteRequest);
+
     // Company name for saving
     const companyName = formData.get('company_name');
+    debugLog(`Company name: ${companyName || 'not provided'}`);
 
     try {
         showLoading(resultsContainer);
         resultsSection.style.display = 'block';
 
         // Try to get quote with persistence
-        const response = await fetch(`${API_BASE_URL}/quotes/`, {
+        const quotesUrl = `${API_BASE_URL}/quotes/`;
+        debugLog(`Attempting to save quote at: ${quotesUrl}`);
+
+        const response = await fetch(quotesUrl, {
             method: 'POST',
             headers: getAuthHeaders(),
             body: JSON.stringify({
@@ -263,31 +378,64 @@ async function handleQuoteSubmit(e) {
             })
         });
 
+        debugLog(`Quotes API response status: ${response.status}`);
+        debugLog(`Response headers:`, {
+            contentType: response.headers.get('content-type'),
+            contentLength: response.headers.get('content-length')
+        });
+
         if (!response.ok) {
+            debugLog('Quote persistence failed, trying direct API...');
+
             // If persistence fails, try direct quote
-            const directResponse = await fetch(`${API_BASE_URL}/quote`, {
+            const directUrl = `${API_BASE_URL}/quote`;
+            debugLog(`Direct quote URL: ${directUrl}`);
+
+            const directResponse = await fetch(directUrl, {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify(quoteRequest)
             });
 
+            debugLog(`Direct API response status: ${directResponse.status}`);
+
             if (!directResponse.ok) {
-                throw new Error('Error al obtener cotización');
+                const errorText = await directResponse.text();
+                debugLog('ERROR: Direct API failed', {
+                    status: directResponse.status,
+                    statusText: directResponse.statusText,
+                    response: errorText
+                });
+                throw new Error(`Error al obtener cotización: ${directResponse.status}`);
             }
 
             const data = await directResponse.json();
+            debugLog('Direct quote response received:', {
+                quotes_count: data.quotes ? data.quotes.length : 0
+            });
+
             displayResults(data);
             showMessage('Cotización obtenida (sin persistencia)', 'success');
         } else {
             const data = await response.json();
+            debugLog('Quote saved successfully:', {
+                id: data.id,
+                quotes_count: data.quotes ? data.quotes.length : 0
+            });
+
             displayQuotationResults(data);
             loadHistory(); // Refresh history
             showMessage('Cotización guardada exitosamente', 'success');
         }
     } catch (error) {
         console.error('Error:', error);
+        debugLog('ERROR in quote submission:', {
+            message: error.message,
+            stack: error.stack
+        });
         resultsContainer.innerHTML = `<div class="error">Error al obtener cotización: ${error.message}</div>`;
     }
+    debugLog('=' * 60);
 }
 
 // Display results from direct quote
