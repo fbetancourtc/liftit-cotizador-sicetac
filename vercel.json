@@ -1,28 +1,32 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
+      "source": "/sicetac",
+      "destination": "/app/static/login.html"
+    },
+    {
+      "source": "/sicetac/",
+      "destination": "/app/static/login.html"
+    },
+    {
+      "source": "/sicetac/api/(.*)",
       "destination": "/api"
     },
     {
-      "source": "/static/(.*)",
+      "source": "/sicetac/static/(.*)",
       "destination": "/app/static/$1"
     },
     {
-      "source": "/",
-      "destination": "/app/static/login.html"
-    },
-    {
-      "source": "/app",
+      "source": "/sicetac/app",
       "destination": "/app/static/index.html"
     },
     {
-      "source": "/login",
-      "destination": "/app/static/login.html"
+      "source": "/sicetac/dashboard",
+      "destination": "/app/static/dashboard.html"
     },
     {
-      "source": "/dashboard",
-      "destination": "/app/static/dashboard.html"
+      "source": "/sicetac/login",
+      "destination": "/app/static/login.html"
     }
   ],
   "functions": {
@@ -30,5 +34,16 @@
       "maxDuration": 30,
       "includeFiles": "app/**"
     }
-  }
+  },
+  "headers": [
+    {
+      "source": "/sicetac/(.*)",
+      "headers": [
+        {
+          "key": "X-Base-Path",
+          "value": "/sicetac"
+        }
+      ]
+    }
+  ]
 }

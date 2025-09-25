@@ -1,5 +1,6 @@
 // API Configuration
-const API_BASE_URL = '/api';
+// Use configuration from config.js if available
+const API_BASE_URL = window.APP_CONFIG ? window.APP_CONFIG.API_BASE : '/sicetac/api';
 
 let cachedConfig = null;
 
@@ -150,13 +151,19 @@ async function handleLogout() {
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
         localStorage.removeItem('token_expires_at');
-        window.location.href = '/login';
+        window.location.href = window.APP_CONFIG ? window.APP_CONFIG.ROUTES.LOGIN : '/sicetac';
     }
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     await handleOAuthRedirect();
+
+    // Update footer year automatically
+    const yearElement = document.getElementById('currentYear');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
 
     // Check if user is authenticated
     if (!checkAuth()) {

@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/sicetac/">
     <title>Login - Liftit Cotizador SICETAC</title>
+    <script src="/sicetac/static/config.js"></script>
     <style>
         * {
             margin: 0;
@@ -301,8 +303,8 @@
         async function initSupabase() {
             console.log('[INIT] Starting Supabase initialization...');
             try {
-                console.log('[INIT] Fetching config from /api/config...');
-                const response = await fetch('/api/config');
+                console.log('[INIT] Fetching config from', window.APP_CONFIG.getApiUrl('/config'));
+                const response = await fetch(window.APP_CONFIG.getApiUrl('/config'));
 
                 if (!response.ok) {
                     console.error('[INIT] Config fetch failed:', response.status);
@@ -324,7 +326,7 @@
                         </div>
                     `;
                     setTimeout(() => {
-                        window.location.href = '/app';
+                        window.location.href = window.APP_CONFIG.ROUTES.APP;
                     }, 1500);
                     return false;
                 }
@@ -402,7 +404,7 @@
                     // Redirect to main app
                     console.log('[AUTH] Redirecting to /app in 1.5 seconds...');
                     setTimeout(() => {
-                        window.location.href = '/app';
+                        window.location.href = window.APP_CONFIG.ROUTES.APP;
                     }, 1500);
                 }
             });
@@ -444,7 +446,7 @@
 
                     showAlert('Sesión activa detectada. Redirigiendo...', 'info');
                     setTimeout(() => {
-                        window.location.href = '/app';
+                        window.location.href = window.APP_CONFIG.ROUTES.APP;
                     }, 1500);
                 } else {
                     console.log('[SESSION] No active session found');
@@ -457,7 +459,7 @@
         // Send auth logs to backend
         async function logAuthEvent(type, data) {
             try {
-                await fetch('/api/auth/monitoring/log', {
+                await fetch(window.APP_CONFIG.getApiUrl('/auth/monitoring/log'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -499,7 +501,7 @@
             logAuthEvent('login_attempt', { metadata: { provider: 'google' } });
 
             console.log('[GOOGLE] Starting OAuth flow...');
-            const redirectUrl = window.location.origin + '/app';
+            const redirectUrl = window.location.origin + window.APP_CONFIG.ROUTES.APP;
             console.log('[GOOGLE] Redirect URL:', redirectUrl);
 
             try {
@@ -632,7 +634,7 @@
 
                     showAlert('¡Inicio de sesión exitoso! Redirigiendo...', 'success');
                     setTimeout(() => {
-                        window.location.href = '/app';
+                        window.location.href = window.APP_CONFIG.ROUTES.APP;
                     }, 1500);
                 }
 

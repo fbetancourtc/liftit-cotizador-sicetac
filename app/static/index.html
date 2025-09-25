@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/sicetac/">
     <title>Liftit - Cotizador SICETAC</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <script src="/sicetac/static/config.js"></script>
+    <link rel="stylesheet" href="/sicetac/static/styles.css">
 </head>
 <body>
     <div class="container">
@@ -129,7 +131,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2024 Liftit - Sistema de Cotización SICETAC</p>
+            <p>&copy; <span id="currentYear">2024</span> Liftit - Sistema de Cotización SICETAC</p>
         </footer>
     </div>
 
@@ -150,7 +152,7 @@
         </div>
     </div>
 
-    <script src="/static/cities.js"></script>
-    <script src="/static/app.js"></script>
+    <script src="/sicetac/static/cities.js"></script>
+    <script src="/sicetac/static/app.js"></script>
 </body>
 </html>

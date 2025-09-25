@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/sicetac/">
     <title>SICETAC - Dashboard de Monitoreo</title>
+    <script src="/sicetac/static/config.js"></script>
     <style>
         * {
             margin: 0;
@@ -435,7 +437,7 @@
 
         async function fetchHealthStatus() {
             try {
-                const response = await fetch('/api/healthz');
+                const response = await fetch(window.APP_CONFIG.getApiUrl('/healthz'));
                 const data = await response.json();
 
                 const statusIndicator = document.getElementById('statusIndicator');
@@ -459,7 +461,7 @@
         async function fetchMetrics() {
             try {
                 // Simulate fetching metrics - in production, this would call actual API endpoints
-                const response = await fetch('/api/quotes/');
+                const response = await fetch(window.APP_CONFIG.getApiUrl('/quotes/'));
                 if (response.ok) {
                     const data = await response.json();
                     metricsData.totalQuotes = data.length || 0;
