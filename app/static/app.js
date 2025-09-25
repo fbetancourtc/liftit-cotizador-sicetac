@@ -297,44 +297,82 @@ function displayResults(data) {
         return;
     }
 
+    // Show loading skeletons first for smooth transition
     let html = '<div class="quotes-grid">';
-
-    data.quotes.forEach((quote, index) => {
-        html += `
-            <div class="quote-result">
-                <h3>${quote.unit_type || 'N/A'} - ${quote.cargo_type || 'N/A'}</h3>
-                <div class="quote-details">
-                    <div class="detail-item">
-                        <div class="detail-label">Ruta</div>
-                        <div class="detail-value">${quote.route_name || 'N/A'}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Valor Movilización</div>
-                        <div class="detail-value price">$${formatNumber(quote.mobilization_value)}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Valor por Tonelada</div>
-                        <div class="detail-value">$${formatNumber(quote.ton_value)}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Valor por Hora</div>
-                        <div class="detail-value">$${formatNumber(quote.hour_value)}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Distancia</div>
-                        <div class="detail-value">${quote.distance_km} km</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Valor Mínimo a Pagar</div>
-                        <div class="detail-value price">$${formatNumber(quote.minimum_payable)}</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
+    for (let i = 0; i < data.quotes.length && i < 3; i++) {
+        html += quoteCard.createSkeletonCard();
+    }
     html += '</div>';
     resultsContainer.innerHTML = html;
+    resultsSection.style.display = 'block';
+
+    // Process and display actual results after brief delay
+    setTimeout(() => {
+        let resultsHtml = '<div class="quotes-grid">';
+
+        data.quotes.forEach((quote, index) => {
+            // Transform the quote data to match V0 component format
+            const enhancedQuote = {
+                origin_city: data.origin_city || quote.origin_city || 'Origen',
+                destination_city: data.destination_city || quote.destination_city || 'Destino',
+                configuration: data.configuration || quote.configuration || 'N/A',
+                total_price: quote.mobilization_value || quote.minimum_payable || 0,
+                base_price: quote.ton_value || (quote.mobilization_value - (quote.hour_value || 0)),
+                logistics_cost: quote.hour_value || 0,
+                cargo_type: quote.cargo_type || data.cargo_type,
+                unit_type: quote.unit_type || data.unit_type,
+                distance: quote.distance_km,
+                estimated_days: quote.estimated_days || Math.ceil((quote.distance_km || 500) / 400),
+                route_name: quote.route_name
+            };
+
+            // Use V0 component if available
+            if (typeof quoteCard !== 'undefined') {
+                resultsHtml += quoteCard.createCard(enhancedQuote);
+            } else {
+                // Fallback to original display
+                resultsHtml += `
+                    <div class="quote-result">
+                        <h3>${quote.unit_type || 'N/A'} - ${quote.cargo_type || 'N/A'}</h3>
+                        <div class="quote-details">
+                            <div class="detail-item">
+                                <div class="detail-label">Ruta</div>
+                                <div class="detail-value">${quote.route_name || 'N/A'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Valor Movilización</div>
+                                <div class="detail-value price">$${formatNumber(quote.mobilization_value)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Valor por Tonelada</div>
+                                <div class="detail-value">$${formatNumber(quote.ton_value)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Valor por Hora</div>
+                                <div class="detail-value">$${formatNumber(quote.hour_value)}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Distancia</div>
+                                <div class="detail-value">${quote.distance_km} km</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Valor Mínimo a Pagar</div>
+                                <div class="detail-value price">$${formatNumber(quote.minimum_payable)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        resultsHtml += '</div>';
+        resultsContainer.innerHTML = resultsHtml;
+
+        // Initialize V0 component animations
+        if (typeof quoteCard !== 'undefined') {
+            quoteCard.init();
+        }
+    }, 300);
 }
 
 // Display results from saved quotation
